@@ -1,0 +1,18 @@
+body { -webkit-tap-highlight-color: transparent; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.text-gradient {
+    background: linear-gradient(135deg, #0ea5e9, #ca8a04);
+    -webkit-background-clip: text; 
+    background-clip: text; 
+    color: transparent;
+}
+
+.dark .text-gradient {
+    background: linear-gradient(135deg, #38bdf8, #facc15);
+    -webkit-background-clip: text; 
+    background-clip: text; 
+    color: transparent;
+}
