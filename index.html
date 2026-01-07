@@ -157,48 +157,50 @@
     </nav>
 
     <div id="modalBackdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
-    <div id="modalSheet" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card rounded-t-[30px] z-[56] transform translate-y-full transition-transform duration-300 max-h-[85vh] overflow-y-auto shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
-        <div class="sticky top-0 bg-white dark:bg-dark-card pt-4 pb-2 px-6 rounded-t-[30px] z-10">
-            <div class="w-12 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
-            <div class="flex justify-between items-start">
-                <div class="flex-1 ml-4">
-                    <span id="modalCategoryBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-300 mb-2">
-                        تصنيف
-                    </span>
-                    <h3 id="modalTitle" class="text-xl font-headings font-bold text-slate-800 dark:text-white leading-relaxed">العنوان</h3>
-                </div>
-                <button onclick="closeModal()" class="p-2 bg-gray-50 dark:bg-slate-700 rounded-full text-slate-500 flex-shrink-0">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+ <div id="modalSheet" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card rounded-t-[30px] z-[56] transform translate-y-full transition-transform duration-300 h-[85vh] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col">
+    
+    <div class="bg-white dark:bg-dark-card pt-4 pb-2 px-6 rounded-t-[30px] z-10 flex-shrink-0 border-b border-gray-50 dark:border-slate-800/50">
+        <div class="w-12 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
+        <div class="flex justify-between items-start gap-4">
+            <div class="flex-1">
+                <span id="modalCategoryBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-300 mb-2">
+                    تصنيف
+                </span>
+                <h3 id="modalTitle" class="text-xl font-headings font-bold text-slate-800 dark:text-white leading-relaxed max-h-[15vh] overflow-y-auto no-scrollbar">
+                    العنوان
+                </h3>
+            </div>
+            <button onclick="closeModal()" class="p-2 bg-gray-50 dark:bg-slate-700 rounded-full text-slate-500 flex-shrink-0 hover:bg-gray-100 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="flex-1 overflow-y-auto px-6 pb-8 pt-4">
+        <div class="prose prose-slate dark:prose-invert max-w-none">
+            <div class="bg-amber-50 dark:bg-amber-900/10 border-r-4 border-amber-400 p-4 rounded-lg my-4">
+                <p class="text-sm text-amber-800 dark:text-amber-200 font-medium m-0" id="modalPartInfo">معلومات المصدر</p>
+            </div>
+            
+            <h4 class="text-lg font-bold font-headings mt-6 mb-2 text-slate-800 dark:text-slate-200">نص الجواب</h4>
+            
+            <div class="text-slate-600 dark:text-slate-300 leading-9 text-lg text-justify font-headings select-text pb-4" id="modalDetails">
+            </div>
+
+            <div class="mt-8 flex gap-3 pb-8">
+                <button onclick="shareContent(this)" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-xl font-medium shadow-lg shadow-primary-500/20 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                    مشاركة
+                </button>
+                <button onclick="copyContent(this)" class="flex-1 bg-gray-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-3 rounded-xl font-medium hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="copy" class="w-4 h-4"></i>
+                    نسخ
                 </button>
             </div>
         </div>
-        
-        <div class="px-6 pb-8 pt-2">
-            <div class="prose prose-slate dark:prose-invert max-w-none">
-                <div class="bg-amber-50 dark:bg-amber-900/10 border-r-4 border-amber-400 p-4 rounded-lg my-4">
-                    <p class="text-sm text-amber-800 dark:text-amber-200 font-medium m-0" id="modalPartInfo">معلومات المصدر</p>
-                </div>
-                
-                <h4 class="text-lg font-bold font-headings mt-6 mb-2 text-slate-800 dark:text-slate-200">نص الجواب</h4>
-                <div class="text-slate-600 dark:text-slate-300 leading-9 text-lg text-justify font-headings" id="modalDetails">
-                </div>
-
-                <div class="mt-8 flex gap-3">
-<button onclick="window.shareContent(this)" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-xl font-medium shadow-lg shadow-primary-500/20 transition-all flex items-center justify-center gap-2">
-    <i data-lucide="share-2" class="w-4 h-4"></i>
-    مشاركة
-</button>
-
-<button onclick="window.copyContent(this)" class="flex-1 bg-gray-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-3 rounded-xl font-medium hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
-    <i data-lucide="copy" class="w-4 h-4"></i>
-    نسخ
-</button>
-
-                </div>
-            </div>
-            <div class="h-10"></div>
-        </div>
+        <div class="h-10"></div>
     </div>
+</div>
 
     <div id="favoritesBackdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[51] hidden opacity-0 transition-opacity duration-300" onclick="closeFavoritesModal()"></div>
     <div id="favoritesSheet" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card rounded-t-[30px] z-[52] transform translate-y-full transition-transform duration-300 h-[85vh] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col">
