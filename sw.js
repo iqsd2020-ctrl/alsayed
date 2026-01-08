@@ -1,4 +1,4 @@
-const CACHE_NAME = 'manhaj-noor-v1';
+const CACHE_NAME = 'manhaj-noor-v11';
 const ASSETS_TO_CACHE = [
 './',
 './index.html',
