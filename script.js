@@ -15,6 +15,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 let allData = [];
+let booksMap = new Map();
+let headersMap = new Map();
+let booksOrder = [];
+let booksArr = [];
+let headersArr = [];
+let bookNameToId = new Map();
+
+// ===== الفهرست (TOC) =====
+let TOC_MODE = 'books'; // 'books' | 'headers'
+let TOC_CURRENT_PART = null;
+let TOC_FROM_BOOKS_LIST = false;
 let currentCategory = 'الكل';
 let isDataLoaded = false;
 let currentUser = null;
@@ -30,6 +41,8 @@ document.addEventListener('dragstart', event => event.preventDefault());
 function setupEventListeners() {
 const favBtn = document.getElementById('favNavBtn');
 if (favBtn) favBtn.addEventListener('click', openFavoritesModal);
+const tocBtn = document.getElementById('tocBtn');
+if (tocBtn) tocBtn.addEventListener('click', openTocModal);
 const historyBtn = document.getElementById('historyNavBtn');
 if (historyBtn) historyBtn.addEventListener('click', openHistoryModal);
 const homeBtn = document.getElementById('homeNavBtn');
@@ -64,7 +77,15 @@ userBtn.onclick = () => window.toggleAuthModal(true);
 }
 });
 const searchInput = document.getElementById('searchInput');
-if(searchInput) {
+if (searchInput) {
+const searchButton = document.getElementById('searchButton');
+if (searchButton) searchButton.addEventListener('click', () => performSearch(searchInput.value));
+searchInput.addEventListener('keydown', (e) => {
+if (e.key === 'Enter') {
+e.preventDefault();
+performSearch(searchInput.value);
+}
+});
 let searchTimeout;
 searchInput.addEventListener('input', (e) => {
 const term = e.target.value;
@@ -165,6 +186,259 @@ backdrop.classList.add('hidden');
 document.body.classList.remove('overflow-hidden');
 }, 300);
 };
+
+// ===== نافذة الفهرست (TOC) =====
+function getPartIdForCategory(categoryName) {
+  if (!categoryName || categoryName === 'الكل') return null;
+  if (bookNameToId.has(String(categoryName))) return bookNameToId.get(String(categoryName));
+  const found = allData.find(it => it && it.category === categoryName && it.part != null && String(it.part) !== '');
+  return found ? String(found.part) : null;
+}
+
+function getBookNameByPart(partId) {
+  const name = booksMap.get(String(partId));
+  if (name) return name;
+  const found = allData.find(it => it && String(it.part) === String(partId) && it.category);
+  return found ? found.category : String(partId);
+}
+
+function anyModalOpen() {
+  const ids = ['modalBackdrop', 'favoritesBackdrop', 'historyBackdrop', 'profileModal', 'authModal', 'tocBackdrop'];
+  return ids.some(id => {
+    const el = document.getElementById(id);
+    return el && !el.classList.contains('hidden') && !el.classList.contains('opacity-0');
+  });
+}
+
+const escapeHtml = (s) => String(s ?? '')
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;');
+
+function renderToc() {
+  const titleEl = document.getElementById('tocTitle');
+  const listEl = document.getElementById('tocList');
+  const backBtn = document.getElementById('tocBackBtn');
+  if (!titleEl || !listEl || !backBtn) return;
+
+  // زر الرجوع يظهر فقط عند الدخول لوضع الأبواب من قائمة الكتب
+  if (TOC_MODE === 'headers' && TOC_FROM_BOOKS_LIST) {
+    backBtn.classList.remove('hidden');
+  } else {
+    backBtn.classList.add('hidden');
+  }
+
+  if (TOC_MODE === 'books') {
+    titleEl.textContent = 'فهرست جميع الكتب';
+
+    const countsByPart = {};
+    allData.forEach(it => {
+      const p = it?.part;
+      if (p == null || String(p) === '') return;
+      const key = String(p);
+      countsByPart[key] = (countsByPart[key] || 0) + 1;
+    });
+
+    // ترتيب الكتب: إن وُجدت booksArr فنعتمدها، وإلا نعتمد تصنيفات البيانات
+    let booksToShow = [];
+    if (Array.isArray(booksArr) && booksArr.length) {
+      booksToShow = booksArr
+        .map(b => ({ id: String(b.id), name: String(b.name || '') }))
+        .filter(b => b.name && countsByPart[b.id] != null);
+    } else {
+      const byCat = {};
+      allData.forEach(it => {
+        const name = it?.category;
+        if (!name) return;
+        byCat[name] = (byCat[name] || 0) + 1;
+      });
+      booksToShow = Object.keys(byCat).sort().map(name => ({ id: getPartIdForCategory(name) || name, name }));
+      // احفظ العدادات بشكل موحد
+      booksToShow.forEach(b => { if (countsByPart[b.id] == null) countsByPart[b.id] = byCat[b.name] || 0; });
+    }
+
+    if (!booksToShow.length) {
+      listEl.innerHTML = `
+        <div class="text-center text-sm text-slate-500 dark:text-slate-400 py-10">لا توجد فهارس متاحة</div>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    listEl.innerHTML = booksToShow.map(b => {
+      const count = countsByPart[b.id] || 0;
+      const partLabel = (b.id && b.id !== b.name) ? `الجزء: ${b.id}` : '';
+      return `
+        <button type="button" data-toc-part="${String(b.id)}" class="w-full text-right bg-white dark:bg-dark-card border border-gray-100 dark:border-slate-700 rounded-2xl p-4 hover:shadow-sm transition-all flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <p class="font-headings font-bold text-slate-800 dark:text-slate-100 line-clamp-1">${escapeHtml(b.name)}</p>
+            ${partLabel ? `<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${partLabel}</p>` : ''}
+          </div>
+          <div class="flex items-center gap-3 flex-shrink-0">
+            <span class="text-xs font-bold bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-200 px-2.5 py-1 rounded-full">${count}</span>
+            <i data-lucide="chevron-left" class="w-5 h-5 text-slate-400"></i>
+          </div>
+        </button>
+      `;
+    }).join('');
+
+    listEl.querySelectorAll('[data-toc-part]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const part = btn.getAttribute('data-toc-part');
+        TOC_MODE = 'headers';
+        TOC_CURRENT_PART = part;
+        TOC_FROM_BOOKS_LIST = true;
+        renderToc();
+      });
+    });
+  } else {
+    const partId = TOC_CURRENT_PART;
+    const bookName = partId ? getBookNameByPart(partId) : 'جميع الكتب';
+    titleEl.textContent = `فهرست ${bookName}`;
+
+    const pool = allData.filter(it => partId ? String(it.part) === String(partId) : true);
+    const totalInPart = pool.length;
+
+    const countsByHeader = {};
+    pool.forEach(it => {
+      const hid = it?.headerId;
+      if (!hid) return;
+      const key = String(hid);
+      countsByHeader[key] = (countsByHeader[key] || 0) + 1;
+    });
+
+    let headersToShow = headersArr;
+    if (partId) headersToShow = headersArr.filter(h => String(h.part) === String(partId));
+    headersToShow = [...headersToShow].sort((a, b) => Number(a.anchorOrder || 0) - Number(b.anchorOrder || 0));
+
+    const allItem = `
+      <button type="button" data-toc-show-all="1" class="w-full text-right bg-white dark:bg-dark-card border border-gray-100 dark:border-slate-700 rounded-2xl p-4 hover:shadow-sm transition-all flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="font-headings font-bold text-primary-700 dark:text-primary-300">عرض جميع مسائل الكتاب</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${escapeHtml(bookName)}</p>
+        </div>
+        <span class="text-xs font-bold bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-200 px-2.5 py-1 rounded-full">${totalInPart}</span>
+      </button>
+    `;
+
+    if (!headersToShow.length) {
+      listEl.innerHTML = allItem + `
+        <div class="text-center text-sm text-slate-500 dark:text-slate-400 py-8">لا توجد أبواب مسجلة لهذا الكتاب</div>
+      `;
+    } else {
+      listEl.innerHTML = allItem + headersToShow.map(h => {
+        const hid = String(h.id);
+        const count = countsByHeader[hid] || 0;
+        return `
+          <button type="button" data-toc-hid="${hid}" class="w-full text-right bg-white dark:bg-dark-card border border-gray-100 dark:border-slate-700 rounded-2xl p-4 hover:shadow-sm transition-all flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-amber-700 dark:text-amber-300 mb-0.5">الباب</p>
+              <p class="font-headings font-bold text-slate-800 dark:text-slate-100 line-clamp-2">${escapeHtml(h.title || '')}</p>
+            </div>
+            <span class="text-xs font-bold bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-200 px-2.5 py-1 rounded-full">${count}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    // عرض جميع المسائل
+    const showAllBtn = listEl.querySelector('[data-toc-show-all]');
+    if (showAllBtn) {
+      showAllBtn.addEventListener('click', () => {
+        closeTocModal();
+        if (partId) {
+          const bn = getBookNameByPart(partId);
+          window.filterCategory(bn, true);
+        } else {
+          window.filterCategory('الكل', true);
+        }
+      });
+    }
+
+    // فلترة حسب الباب
+    listEl.querySelectorAll('[data-toc-hid]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const hid = btn.getAttribute('data-toc-hid');
+        closeTocModal();
+        if (!partId) return;
+        const bn = getBookNameByPart(partId);
+        window.filterCategory(bn, true);
+        const filtered = allData.filter(it => it && it.category === bn && String(it.headerId) === String(hid));
+        renderResults(filtered.slice(0, 200));
+
+        // إظهار عدّاد النتائج (نفس عنصر البحث) كإشارة للمستخدم
+        const resultsCount = document.getElementById('resultsCount');
+        const countValue = document.getElementById('countValue');
+        if (countValue) countValue.innerText = filtered.length;
+        if (resultsCount) resultsCount.classList.remove('hidden');
+      });
+    });
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function openTocModal() {
+  if (!isDataLoaded) return;
+  const backdrop = document.getElementById('tocBackdrop');
+  const sheet = document.getElementById('tocSheet');
+  if (!backdrop || !sheet) return;
+
+  // حدّد وضع الفهرست بناءً على التصنيف الحالي
+  const partId = getPartIdForCategory(currentCategory);
+  if (currentCategory !== 'الكل' && partId) {
+    TOC_MODE = 'headers';
+    TOC_CURRENT_PART = partId;
+    TOC_FROM_BOOKS_LIST = false;
+  } else {
+    TOC_MODE = 'books';
+    TOC_CURRENT_PART = null;
+    TOC_FROM_BOOKS_LIST = false;
+  }
+
+  backdrop.classList.remove('hidden');
+  setTimeout(() => {
+    backdrop.classList.remove('opacity-0');
+    sheet.classList.remove('translate-y-full');
+  }, 10);
+  document.body.classList.add('overflow-hidden');
+  renderToc();
+}
+
+window.closeTocModal = function() {
+  const backdrop = document.getElementById('tocBackdrop');
+  const sheet = document.getElementById('tocSheet');
+  if (!backdrop || !sheet) return;
+  backdrop.classList.add('opacity-0');
+  sheet.classList.add('translate-y-full');
+  setTimeout(() => {
+    backdrop.classList.add('hidden');
+
+    // إعادة تعيين الوضع
+    TOC_MODE = 'books';
+    TOC_CURRENT_PART = null;
+    TOC_FROM_BOOKS_LIST = false;
+
+    // لا ترفع القفل إن كان هناك نوافذ أخرى مفتوحة
+    if (!anyModalOpen()) document.body.classList.remove('overflow-hidden');
+  }, 300);
+};
+
+// زر الرجوع داخل الفهرست
+document.addEventListener('DOMContentLoaded', () => {
+  const backBtn = document.getElementById('tocBackBtn');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      TOC_MODE = 'books';
+      TOC_CURRENT_PART = null;
+      TOC_FROM_BOOKS_LIST = false;
+      renderToc();
+    });
+  }
+});
+
 function initializeData() {
 const loadingState = document.getElementById('loadingState');
 if (typeof MasailData === 'undefined') {
@@ -188,24 +462,67 @@ if (!rawEntries.length && MasailData.qa_entries) rawEntries = MasailData.qa_entr
 else if (!rawEntries.length && MasailData.data) rawEntries = MasailData.data;
 }
 if (!rawEntries || rawEntries.length === 0) throw new Error("بيانات فارغة");
-allData = rawEntries.map((item, index) => {
-let questionText = "مسألة بدون عنوان";
-let answerText = "";
-if (item.qa && Array.isArray(item.qa) && item.qa.length > 0) {
-questionText = item.qa[0].q || questionText;
-answerText = item.qa[0].a || "";
-} else if (item.q && item.a) {
-questionText = item.q;
-answerText = item.a;
+// تهيئة الفهارس (الكتب/الأبواب) إن توفرت في ملف البيانات
+try {
+  const _books = Array.isArray(MasailData.books) ? MasailData.books : [];
+  booksArr = _books;
+  booksMap = new Map(_books.map(b => [String(b.id), b.name]));
+  booksOrder = _books.map(b => b.name).filter(Boolean);
+  bookNameToId = new Map(_books.filter(b => b && b.name != null).map(b => [String(b.name), String(b.id)]));
+
+  const _headers = Array.isArray(MasailData.headers) ? MasailData.headers : [];
+  headersArr = _headers;
+  headersMap = new Map(_headers.map(h => [String(h.id), h]));
+} catch (e) {
+  booksArr = [];
+  headersArr = [];
+  booksMap = new Map();
+  headersMap = new Map();
+  booksOrder = [];
+  bookNameToId = new Map();
 }
-return {
-id: item.id || `q_${index}`,
-title: questionText,
-category: item.volume_name || "عام",
-summary: answerText.substring(0, 85).replace(/\r\n|\n/g, ' ') + "...",
-details: answerText,
-sourceInfo: `الجزء: ${item.part || '-'} | ${item.volume_name || '-'}`
-};
+allData = rawEntries.map((item, index) => {
+  let questionText = "مسألة بدون عنوان";
+  let answerText = "";
+  if (item.qa && Array.isArray(item.qa) && item.qa.length > 0) {
+    questionText = item.qa[0].q || questionText;
+    answerText = item.qa[0].a || "";
+  } else if (item.question || item.answer) {
+    questionText = item.question || questionText;
+    answerText = item.answer || "";
+  } else if (item.q && item.a) {
+    questionText = item.q;
+    answerText = item.a;
+  }
+
+  const partStr = String(item.part ?? "");
+  const bookName = booksMap.get(partStr) || item.volume_name || "عام";
+  const hdr = headersMap.get(String(item.headerId || ""));
+  const headerTitle = hdr && hdr.title ? hdr.title : "";
+  const masalaNo = (item.displayOrder ?? item.order ?? null);
+
+
+  const infoParts = [];
+  if (bookName) infoParts.push(`الكتاب: ${bookName}`);
+  if (item.part != null && item.part !== '') infoParts.push(`الجزء: ${item.part}`);
+  if (masalaNo != null && masalaNo !== '') infoParts.push(`رقم المسألة: ${masalaNo}`);
+  if (headerTitle) infoParts.push(`الباب: ${headerTitle}`);
+
+  const cleanSummary = (answerText || "").replace(/\r\n|\n/g, ' ').trim();
+
+  return {
+    id: item.id || `q_${index}`,
+    title: questionText,
+    category: bookName,
+    summary: (cleanSummary.substring(0, 85) + (cleanSummary.length > 85 ? '...' : '')),
+    details: answerText || "",
+    sourceInfo: infoParts.join(' | '),
+    part: item.part ?? null,
+    masalaNo,
+    order: masalaNo,
+    headerId: item.headerId || null,
+    headerTitle
+  };
 });
 isDataLoaded = true;
 if(loadingState) loadingState.classList.add('hidden');
@@ -227,46 +544,109 @@ return;
 if(emptyState) emptyState.classList.add('hidden');
 }
 const fragment = document.createDocumentFragment();
-data.forEach((item, index) => {
-const div = document.createElement('div');
-div.className = 'bg-white dark:bg-dark-card p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-all group animate-slide-up relative';
-if(index < 10) div.style.animationDelay = `${index * 0.03}s`;
-const displayTitle = highlightTerm ? highlightText(item.title, highlightTerm) : item.title;
-const displaySummary = highlightTerm ? highlightText(item.summary, highlightTerm) : item.summary;
-const isFav = userFavorites.has(String(item.id));
-const heartClass = isFav ? 'fill-red-500 text-red-500' : 'text-slate-300 dark:text-slate-600 hover:text-red-400';
-const favBtn = document.createElement('button');
-favBtn.setAttribute('data-fav-btn-id', String(item.id));
-favBtn.className = `absolute top-5 left-5 z-10 p-2 rounded-full bg-slate-50 dark:bg-slate-800 transition-colors ${heartClass}`;
-favBtn.innerHTML = `<i data-lucide="heart" class="w-5 h-5 transition-colors"></i>`;
-favBtn.onclick = (e) => {
-e.stopPropagation();
-toggleFavorite(item.id);
-};
-const contentDiv = document.createElement('div');
-contentDiv.className = 'cursor-pointer';
-contentDiv.onclick = () => window.openModal(item);
-let iconName = 'book';
-const cat = item.category;
-if(cat.includes('صلاة') || cat.includes('صوم')) iconName = 'sun';
-else if(cat.includes('زكاة') || cat.includes('خمس')) iconName = 'coins';
-contentDiv.innerHTML = `
-<div class="flex items-start justify-between mb-3 pl-12">
-<span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-700/50 px-2.5 py-1 rounded-lg transition-colors hover:bg-gray-200 dark:hover:bg-slate-700">
-<i data-lucide="${iconName}" class="w-3.5 h-3.5 text-primary-500"></i>
-<span class="truncate max-w-[180px]">${item.category}</span>
-</span>
-</div>
-<h3 class="font-headings font-bold text-lg text-slate-800 dark:text-slate-100 mb-2 leading-tight">
-${displayTitle}
-</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed overflow-hidden h-10 line-clamp-2">
-${displaySummary}
-</p>
-`;
-div.appendChild(favBtn);
-div.appendChild(contentDiv);
-fragment.appendChild(div);
+const sortedData = [...data].sort((a, b) => {
+  const pa = Number(a.part || 0);
+  const pb = Number(b.part || 0);
+  if (pa !== pb) return pa - pb;
+  return Number(a.order || 0) - Number(b.order || 0);
+});
+let lastPart = null;
+let lastHeader = null;
+let animIndex = 0;
+sortedData.forEach((item) => {
+  const partNow = item.part ?? null;
+
+  // فاصل الجزء (يظهر فقط عند عرض الكل، لتجنب التكرار داخل نفس الكتاب)
+  if (currentCategory === 'الكل' && partNow !== lastPart) {
+    const partDiv = document.createElement('div');
+    partDiv.className = 'md:col-span-2 col-span-1 px-4 py-3 rounded-2xl bg-slate-900/5 dark:bg-slate-700/30 border border-gray-100 dark:border-slate-700 flex items-center justify-between';
+    partDiv.innerHTML = `
+      <div class="flex items-center gap-2">
+        <div class="p-1.5 bg-white/70 dark:bg-slate-800 rounded-lg text-primary-500 shadow-sm">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-slate-800 dark:text-slate-100">${item.category || '—'}</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">الجزء: ${partNow ?? '—'}</p>
+        </div>
+      </div>`;
+    fragment.appendChild(partDiv);
+    lastHeader = null;
+    lastPart = partNow;
+  }
+
+  // فاصل الباب/العنوان
+  if (item.headerTitle && item.headerTitle !== lastHeader) {
+    const hdrDiv = document.createElement('div');
+    hdrDiv.className = 'md:col-span-2 col-span-1 px-4 py-3 rounded-2xl bg-white/60 dark:bg-slate-800/40 border border-gray-100 dark:border-slate-700 flex items-center gap-2';
+    hdrDiv.innerHTML = `
+      <div class="p-1.5 bg-white dark:bg-slate-800 rounded-lg text-primary-500 shadow-sm">
+        <i data-lucide="bookmark" class="w-4 h-4"></i>
+      </div>
+      <div class="flex-1">
+        <p class="text-xs font-bold text-primary-600 dark:text-primary-400 mb-0.5">الباب</p>
+        <p class="text-sm font-bold text-slate-800 dark:text-slate-100">${item.headerTitle}</p>
+      </div>`;
+    fragment.appendChild(hdrDiv);
+    lastHeader = item.headerTitle;
+  }
+
+  const div = document.createElement('div');
+  div.className = 'bg-white dark:bg-dark-card p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-all group animate-slide-up relative';
+  if (animIndex < 10) div.style.animationDelay = `${animIndex * 0.03}s`;
+  const displayTitle = highlightTerm ? highlightText(item.title, highlightTerm) : item.title;
+  const displaySummary = highlightTerm ? highlightText(item.summary, highlightTerm) : item.summary;
+  const isFav = userFavorites.has(String(item.id));
+  const heartClass = isFav ? 'fill-red-500 text-red-500' : 'text-slate-300 dark:text-slate-600 hover:text-red-400';
+  const favBtn = document.createElement('button');
+  favBtn.setAttribute('data-fav-btn-id', String(item.id));
+  favBtn.className = `absolute top-5 left-5 z-10 p-2 rounded-full bg-slate-50 dark:bg-slate-800 transition-colors ${heartClass}`;
+  favBtn.innerHTML = `<i data-lucide="heart" class="w-5 h-5 transition-colors"></i>`;
+  favBtn.onclick = (e) => {
+    e.stopPropagation();
+    toggleFavorite(item.id);
+  };
+
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'cursor-pointer';
+  contentDiv.onclick = () => window.openModal(item);
+
+  let iconName = 'book';
+  const cat = item.category || '';
+  if (cat.includes('صلاة') || cat.includes('صوم')) iconName = 'sun';
+  else if (cat.includes('زكاة') || cat.includes('خمس')) iconName = 'coins';
+
+  const extraLine = item.sourceInfo ? `<p class="mt-3 text-xs text-slate-400 dark:text-slate-500 line-clamp-2">${item.sourceInfo}</p>` : '';
+
+  const numberBadge = (item.masalaNo != null && item.masalaNo !== '') ? `
+      <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/20 px-2.5 py-1 rounded-lg">
+        <i data-lucide="hash" class="w-3.5 h-3.5 text-primary-500"></i>
+        <span>رقم: ${item.masalaNo}</span>
+      </span>
+    ` : '';
+
+  contentDiv.innerHTML = `
+    <div class="flex items-start justify-between mb-3 pl-12">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-700/50 px-2.5 py-1 rounded-lg transition-colors hover:bg-gray-200 dark:hover:bg-slate-700">
+          <i data-lucide="${iconName}" class="w-3.5 h-3.5 text-primary-500"></i>
+          <span class="truncate max-w-[180px]">${item.category || "عام"}</span>
+        </span>
+        ${numberBadge}
+      </div>
+    </div>
+    <h3 class="font-headings font-bold text-lg text-slate-800 dark:text-slate-100 mb-2 leading-tight">
+      ${displayTitle}
+    </h3>
+    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed overflow-hidden h-10 line-clamp-2">
+      ${displaySummary}
+    </p>
+    ${extraLine}
+  `;
+  div.appendChild(favBtn);
+  div.appendChild(contentDiv);
+  fragment.appendChild(div);
+  animIndex++;
 });
 container.appendChild(fragment);
 if(window.lucide) window.lucide.createIcons();
@@ -464,8 +844,14 @@ allBtn.innerText = "الكل";
 allBtn.addEventListener('click', () => window.filterCategory('الكل'));
 allBtn.className = "flex-shrink-0 px-5 py-2 rounded-full bg-slate-800 text-white text-sm font-medium shadow-md transition-transform active:scale-95 border border-transparent whitespace-nowrap";
 container.appendChild(allBtn);
-const uniqueCategories = [...new Set(allData.map(item => item.category))].filter(Boolean);
-uniqueCategories.sort();
+let uniqueCategories = [...new Set(allData.map(item => item.category))].filter(Boolean);
+if (Array.isArray(booksOrder) && booksOrder.length) {
+  const existing = new Set(uniqueCategories);
+  uniqueCategories = booksOrder.filter(n => existing.has(n));
+  uniqueCategories.push(...[...existing].filter(n => !booksOrder.includes(n)));
+} else {
+  uniqueCategories.sort();
+}
 uniqueCategories.forEach(cat => {
 const btn = document.createElement('button');
 btn.className = "flex-shrink-0 px-5 py-2 rounded-full bg-white dark:bg-dark-card border border-gray-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-medium hover:border-primary-500 transition-all active:scale-95 whitespace-nowrap";
@@ -503,34 +889,92 @@ text = text.replace(/ء/g, "");
 text = text.replace(/ظ/g, "ض");
 return text;
 }
+
+function normalizeDigits(input) {
+  if (input == null) return "";
+  const s = String(input);
+  const ar = '٠١٢٣٤٥٦٧٨٩';
+  const fa = '۰۱۲۳۴۵۶۷۸۹';
+  let out = '';
+  for (const ch of s) {
+    const i1 = ar.indexOf(ch);
+    if (i1 !== -1) { out += String(i1); continue; }
+    const i2 = fa.indexOf(ch);
+    if (i2 !== -1) { out += String(i2); continue; }
+    out += ch;
+  }
+  return out;
+}
+
 function performSearch(term) {
 if (!isDataLoaded) return;
 const resultsCount = document.getElementById('resultsCount');
 const countValue = document.getElementById('countValue');
+
 if (!term || term.trim() === '') {
 window.filterCategory(currentCategory, false);
 return;
 }
+
 const rawTerm = term.trim().toLowerCase();
-const searchTerms = rawTerm.split(/\s+/).map(w => normalizeArabic(w)).filter(w => w.length > 0);
-const filtered = allData.filter(item => {
+const rawDigits = normalizeDigits(rawTerm);
+const compact = rawDigits.replace(/\s+/g, '');
+const digitsOnly = compact.replace(/[^\d]/g, '');
+const isNumericQuery = digitsOnly.length > 0 && digitsOnly.length === compact.length && /^\d+$/.test(digitsOnly);
+
+let filtered = [];
+
+// بحث بالرقم فقط: نطابق رقم المسألة بشكل (متساوي)
+if (isNumericQuery) {
+const target = Number(digitsOnly);
+filtered = allData.filter(item => {
+const isCategoryMatch = (currentCategory === 'الكل' || item.category === currentCategory);
+if (!isCategoryMatch) return false;
+const itemNoRaw = (item.masalaNo ?? item.order ?? '');
+const itemNo = Number(normalizeDigits(String(itemNoRaw)).replace(/[^\d]/g, ''));
+return itemNo === target;
+});
+
+// إن لم توجد نتائج، نعمل سقوطاً بحثاً جزئياً داخل رقم المسألة
+if (filtered.length === 0) {
+filtered = allData.filter(item => {
+const isCategoryMatch = (currentCategory === 'الكل' || item.category === currentCategory);
+if (!isCategoryMatch) return false;
+const itemNoStr = normalizeDigits(String(item.masalaNo ?? item.order ?? ''));
+return itemNoStr.includes(digitsOnly);
+});
+}
+} else {
+// بحث نصي عام (العنوان/التفاصيل/المعرف/رقم المسألة)
+const searchTerms = rawTerm
+.split(/\s+/)
+.map(w => normalizeArabic(normalizeDigits(w)))
+.filter(w => w.length > 0);
+
+filtered = allData.filter(item => {
 const isCategoryMatch = (currentCategory === 'الكل' || item.category === currentCategory);
 if (!isCategoryMatch) return false;
 const normalizedTitle = normalizeArabic(item.title);
 const normalizedDetails = normalizeArabic(item.details);
-const itemId = item.id.toString();
+const itemId = String(item.id ?? '');
+const itemNoStr = normalizeDigits(String(item.masalaNo ?? item.order ?? ''));
+
 return searchTerms.every(word => {
 return (
 normalizedTitle.includes(word) ||
 normalizedDetails.includes(word) ||
-itemId.includes(word)
+itemId.includes(word) ||
+itemNoStr.includes(word)
 );
 });
 });
-renderResults(filtered.slice(0, 100), rawTerm);
-if(countValue) countValue.innerText = filtered.length;
-if(resultsCount) resultsCount.classList.remove('hidden');
 }
+
+renderResults(filtered.slice(0, 100), rawTerm);
+if (countValue) countValue.innerText = filtered.length;
+if (resultsCount) resultsCount.classList.remove('hidden');
+}
+
 window.logoutUser = () => {
 signOut(auth).then(() => {
 window.toggleProfileModal(false);

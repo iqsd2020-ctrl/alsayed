@@ -65,6 +65,9 @@ slideUp: {
 <a href="https://iqsd2020-ctrl.github.io/New/" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400 flex items-center justify-center">
 <i data-lucide="globe" class="w-5 h-5"></i>
 </a>
+<button id="tocBtn" title="الفهرست" aria-label="الفهرست" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400">
+<i data-lucide="list" class="w-5 h-5"></i>
+</button>
 <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400">
 <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
 <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
@@ -84,7 +87,7 @@ slideUp: {
 type="text"
 id="searchInput"
 class="block w-full p-4 pr-12 text-sm text-slate-900 bg-white dark:bg-dark-card dark:text-white rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all placeholder-slate-400"
-placeholder="ابحث عن مسألة (مثال: صلاة الجمعة)..."
+placeholder="ابحث عن مسألة أو رقمها (مثال: 234 أو صلاة الجمعة)..."
 autocomplete="off"
 >
 <div class="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -308,6 +311,27 @@ autocomplete="off"
 </div>
 </div>
 </div>
+
+<!-- نافذة الفهرست -->
+<div id="tocBackdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[57] hidden opacity-0 transition-opacity duration-300" onclick="closeTocModal()"></div>
+<div id="tocSheet" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card rounded-t-[30px] z-[58] transform translate-y-full transition-transform duration-300 h-[85vh] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col">
+  <div class="sticky top-0 bg-white dark:bg-dark-card pt-6 pb-4 px-6 rounded-t-[30px] z-10 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between gap-3">
+    <button id="tocBackBtn" class="p-2 bg-gray-50 dark:bg-slate-700 rounded-full text-slate-500 hover:bg-gray-100 transition-colors hidden" aria-label="رجوع">
+      <i data-lucide="arrow-right" class="w-5 h-5"></i>
+    </button>
+    <div class="flex items-center gap-3 flex-1">
+      <div class="p-2 bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-300 rounded-full">
+        <i data-lucide="list" class="w-5 h-5"></i>
+      </div>
+      <h3 id="tocTitle" class="text-xl font-headings font-bold text-slate-800 dark:text-white">الفهرست</h3>
+    </div>
+    <button onclick="closeTocModal()" class="p-2 bg-gray-50 dark:bg-slate-700 rounded-full text-slate-500 hover:bg-gray-100 transition-colors" aria-label="إغلاق">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+  </div>
+  <div id="tocList" class="flex-1 overflow-y-auto px-4 py-4 space-y-2 bg-gray-50/50 dark:bg-dark-bg/20"></div>
+</div>
+
 <div id="toastContainer" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col gap-2 w-full max-w-xs pointer-events-none transition-all duration-300"></div>
 <script>
 if ('serviceWorker' in navigator) {
