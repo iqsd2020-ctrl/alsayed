@@ -212,6 +212,46 @@
       border-top: 1px solid rgba(0,0,0,0.05);
     }
 
+    /* تنسيق زر التحديث الجديد */
+    .refresh-btn {
+      position: absolute;
+      top: 1.5vh;
+      right: 2vw;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      opacity: 0.85;
+      transition: opacity 0.2s, transform 0.1s;
+      padding: 5px;
+    }
+
+    .refresh-btn:hover {
+      opacity: 1;
+    }
+
+    .refresh-btn:active {
+      transform: scale(0.95);
+    }
+
+    .refresh-btn svg {
+      width: 22px;
+      height: 22px;
+      /* تم إزالة stroke-width لأن الأيقونة الجديدة تعتمد على التعبئة */
+    }
+
+    .refresh-btn span {
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-top: 2px;
+      font-family: inherit;
+    }
+
     .fade-in {
       animation: fadeIn 0.6s ease-out forwards;
       opacity: 0;
@@ -232,6 +272,15 @@
   <main>
     <section class="hero">
       <div class="overlay"></div>
+
+      <!-- أيقونة التحديث المضافة -->
+      <button class="refresh-btn" onclick="window.location.href='https://github.com/iqsd2020-ctrl/alsayed/raw/refs/heads/main/Up/mnhj-noor.apk'" aria-label="تحديث الصفحة">
+        <!-- تم استبدال الأيقونة واستخدام fill="currentColor" لتأخذ لون الزر -->
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+          <path d="m720-80 120-120-28-28-72 72v-164h-40v164l-72-72-28 28L720-80ZM480-800 243-663l237 137 237-137-237-137ZM120-321v-318q0-22 10.5-40t29.5-29l280-161q10-5 19.5-8t20.5-3q11 0 21 3t19 8l280 161q19 11 29.5 29t10.5 40v159h-80v-116L479-434 200-596v274l240 139v92L160-252q-19-11-29.5-29T120-321ZM720 0q-83 0-141.5-58.5T520-200q0-83 58.5-141.5T720-400q83 0 141.5 58.5T920-200q0 83-58.5 141.5T720 0ZM480-491Z"/>
+        </svg>
+        <span>تحديث</span>
+      </button>
 
       <div class="container fade-in">
         <h1 class="main-title">تنويه وتوضيح هام</h1>
@@ -271,3 +320,8 @@
 </body>
 
 </html>
+
+
+
+
+
