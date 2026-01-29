@@ -4108,28 +4108,70 @@
       const [qData, hData, tData] = await Promise.all([loadAllQuestions(), loadHeaders(), loadTexts()]);
       DATA = Array.isArray(qData) ? qData : []; HEADERS = Array.isArray(hData) ? hData : []; TEXTS = Array.isArray(tData) ? tData : [];
 
-
       // بناء قائمة منتقي الأجزاء وتحديث العدادات
       populatePartsPicker();
       updatePartCounts();
-      // بدلاً من تصيير المسائل مباشرة، نعرض شبكة بطاقات الأجزاء ليتخيّر المستخدم الجزء المطلوب
-      renderMasailPartsGrid();
 
-      // منع قائمة الضغط المطوّل/الزر الأيمن على صور الأغلفة
-      document.addEventListener('contextmenu', (e) => {
-        if (e.target && e.target.closest && e.target.closest('.part-cover, .listTitleCover')) e.preventDefault();
-      }, { passive: false });
+      // فتح المسألة مباشرة إذا وُجد رابط مشاركة مثل ?id=q-xxxx
+      const deepLinkId = (() => {
+        try { return new URL(location.href).searchParams.get('id'); } catch (e) { return null; }
+      })();
 
-      // تأكد من إظهار شبكة الأجزاء وإخفاء قائمة المسائل وشريط البحث
-      const partsView = document.getElementById('partsViewMasail');
-      const listView = document.getElementById('listView');
-      const searchDock = document.getElementById('searchDock');
-      if (partsView) { partsView.style.display = ''; }
-      if (listView) { listView.style.display = 'none'; }
-      if (searchDock) { searchDock.style.display = 'none'; }
-      // ensure the search button is hidden on initial load since the cards view does not support searching
-      const searchBtnInit = document.getElementById('searchBtn');
-      if (searchBtnInit) { searchBtnInit.style.display = 'none'; }
+      const openedDeepLink = (() => {
+        if (!deepLinkId) return false;
+
+        // ألغِ أي أوضاع خاصة قبل الفتح
+        setSavedMode(false);
+        setHeaderMode(false);
+        setGoMode(null);
+        const s = document.getElementById('search'); if (s) s.value = '';
+        const g = document.getElementById('gotoNum'); if (g) g.value = '';
+
+        // اعثر على المسألة وافتح جزءها
+        const target =
+          (typeof _getItemById === 'function' ? _getItemById(deepLinkId) : null) ||
+          DATA.find(x => itemId(x) === deepLinkId);
+
+        if (!target) return false;
+
+        openMasailPart(String(target.part || ''));
+
+        // اجعل الصفحة تُحمّل حتى تصل للمسألة ثم انتقل لها
+        const { combined } = buildCombinedList();
+        const qOnly = combined.filter(x => x.type === 'q');
+        const idx = qOnly.findIndex(x => itemId(x.data) === deepLinkId);
+
+        if (idx >= 0) {
+          CURRENT_ITEMS = Math.floor(idx / LOAD_MORE_COUNT) * LOAD_MORE_COUNT;
+          render();
+          setTimeout(() => {
+            const el = document.querySelector(`.card[data-id="${deepLinkId}"]`) || document.querySelector(`[data-id="${deepLinkId}"]`);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              el.classList.add('jumpFlash');
+              setTimeout(() => el.classList.remove('jumpFlash'), 1400);
+            }
+          }, 120);
+        }
+
+        return true;
+      })();
+
+      if (!openedDeepLink) {
+        // بدلاً من تصيير المسائل مباشرة، نعرض شبكة بطاقات الأجزاء ليتخيّر المستخدم الجزء المطلوب
+        renderMasailPartsGrid();
+        // تأكد من إظهار شبكة الأجزاء وإخفاء قائمة المسائل وشريط البحث
+        const partsView = document.getElementById('partsViewMasail');
+        const listView = document.getElementById('listView');
+        const searchDock = document.getElementById('searchDock');
+        if (partsView) { partsView.style.display = ''; }
+        if (listView) { listView.style.display = 'none'; }
+        if (searchDock) { searchDock.style.display = 'none'; }
+        // ensure the search button is hidden on initial load since the cards view does not support searching
+        const searchBtnInit = document.getElementById('searchBtn');
+        if (searchBtnInit) { searchBtnInit.style.display = 'none'; }
+      }
+
       // ربط الحقول الخاصة بالانتقال إلى رقم مسألة بعد اختيار جزء
       wireGoto();
 
