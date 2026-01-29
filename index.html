@@ -366,32 +366,15 @@
       font-style: normal;
       font-display: swap;
     }
-@font-face {
-      font-family: 'Material Symbols Outlined';
-      src: url('MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf') format('truetype');
-      font-weight: 100 700;
-      font-style: normal;
-      font-display: swap;
-    }
 
-    .material-symbols-outlined {
-      font-family: 'Material Symbols Outlined';
-      font-weight: normal;
-      font-style: normal;
-      font-size: 1em;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
+    .msvg {
+      width: 1em;
+      height: 1em;
       display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-feature-settings: 'liga';
-      -webkit-font-smoothing: antialiased;
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      fill: currentColor;
     }
 
-    
     .picker,
     .pRow,
     .pLabel,
@@ -636,8 +619,65 @@
       justify-content: flex-end
     }
 
+    /* مشاركة كصورة (قائمة صغيرة: تنزيل + مشاركة) */
+    .imgShareMenu {
+      position: absolute;
+      top: 42px;
+      inset-inline-end: 0;
+      display: none;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--card);
+      box-shadow: 0 10px 30px rgba(0,0,0,.10);
+      z-index: 30;
+    }
+    .imgShareMenu.open { display: flex; }
+    .imgShareAction {
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      font-family: "Amiri", "LotusBold", "AboThar", "Cairo", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: .95rem;
+      transition: all .2s ease;
+    }
+    .imgShareAction:hover {
+      background: color-mix(in oklab, var(--card) 80%, #34d399 20%);
+      border-color: color-mix(in oklab, var(--border) 70%, #34d399 30%);
+    }
+
+    /* وسم الصورة أسفل البطاقة */
+    .captureWatermark {
+      margin-top: 10px;
+      align-self: flex-end;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: color-mix(in oklab, var(--card) 85%, #fff 15%);
+      color: var(--ink);
+      font-family: "Amiri", "LotusBold", "AboThar", "Cairo", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: .95rem;
+      opacity: .92;
+    }
+    .captureWatermark img {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+
     .saveBtn,
-    .copyBtn {
+    .copyBtn,
+    .imgShareBtn {
       width: 36px;
       height: 36px;
       border-radius: 50%; /* تحويلها لدائرية */
@@ -655,6 +695,7 @@
     /* عند التحويم أو التفعيل */
     .saveBtn:hover,
     .copyBtn:hover,
+    .imgShareBtn:hover,
     .saveBtn[aria-pressed="true"] {
       background: rgba(5, 150, 105, 0.1); /* خلفية خضراء شفافة */
       color: #059669; /* تلوين الأيقونة بالأخضر */
@@ -668,11 +709,13 @@
     }
 
     [data-theme="dark"] .saveBtn,
-    [data-theme="dark"] .copyBtn {
+    [data-theme="dark"] .copyBtn,
+    [data-theme="dark"] .imgShareBtn {
       color: var(--muted);
     }
     
-    [data-theme="dark"] .copyBtn:hover {
+    [data-theme="dark"] .copyBtn:hover,
+    [data-theme="dark"] .imgShareBtn:hover {
        color: #34d399;
        background: rgba(52, 211, 153, 0.15);
     }
@@ -1066,7 +1109,7 @@
       transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    .skybar .iconbtn i {
+    .skybar .iconbtn .msvg {
       font-size: 1.35rem; /* تكبير الأيقونة الداخلية لتكون أوضح */
     }
 
@@ -1622,7 +1665,7 @@
         height: 46px !important;
       }
 
-      .skybar .iconbtn i {
+      .skybar .iconbtn .msvg {
         font-size: 1.2rem !important;
       }
     }
@@ -2084,7 +2127,7 @@
       transition: all 0.2s ease;
     }
 
-    .header-theme-btn i {
+    .header-theme-btn .msvg {
       font-size: 0.95rem; /* تصغير الأيقونة لتناسب الزر الصغير */
     }
 
@@ -2110,7 +2153,7 @@
       transition: all 0.2s ease;
     }
 
-    .header-about-btn i {
+    .header-about-btn .msvg {
       font-size: 1.1rem;
     }
 
@@ -2209,7 +2252,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .close-modal i {
+    .close-modal .msvg {
       font-size: 1.2rem;
       font-weight: bold;
     }
@@ -2242,6 +2285,30 @@
 </head>
 
 <body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+    <symbol id="ms-arrow_downward" viewBox="0 0 960 960"><path d="M440 800V313L216 537L160 480L480 160L800 480L744 537L520 313V800Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-arrow_forward" viewBox="0 0 960 960"><path d="M647 440H160V520H647L423 744L480 800L800 480L480 160L423 216Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-arrow_upward" viewBox="0 0 960 960"><path d="M440 160V647L216 423L160 480L480 800L800 480L744 423L520 647V160Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-aspect_ratio" viewBox="0 0 960 960"><path d="M560 280H760V480H680V360H560ZM200 480H280V600H400V680H200ZM160 160Q127 160 103.5 183.5Q80 207 80 240V720Q80 753 103.5 776.5Q127 800 160 800H800Q833 800 856.5 776.5Q880 753 880 720V240Q880 207 856.5 183.5Q833 160 800 160ZM160 240H800Q800 240 800.0 240.0Q800 240 800 240V720Q800 720 800.0 720.0Q800 720 800 720H160Q160 720 160.0 720.0Q160 720 160 720V240Q160 240 160.0 240.0Q160 240 160 240ZM160 240Q160 240 160.0 240.0Q160 240 160 240V720Q160 720 160.0 720.0Q160 720 160 720Q160 720 160.0 720.0Q160 720 160 720V240Q160 240 160.0 240.0Q160 240 160 240Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-bookmark" viewBox="0 0 960 960"><path d="M200 120V760Q200 793 223.5 816.5Q247 840 280 840H680Q713 840 736.5 816.5Q760 793 760 760V120L480 240ZM280 242 480 328 680 242V760Q680 760 680.0 760.0Q680 760 680 760H280Q280 760 280.0 760.0Q280 760 280 760ZM280 760Q280 760 280.0 760.0Q280 760 280 760H680Q680 760 680.0 760.0Q680 760 680 760H480Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-check" viewBox="0 0 960 960"><path d="M382 240 154 468 211 525 382 354 749 721 806 664Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-close" viewBox="0 0 960 960"><path d="M256 200 200 256 424 480 200 704 256 760 480 536 704 760 760 704 536 480 760 256 704 200 480 424Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-content_copy" viewBox="0 0 960 960"><path d="M360 240Q327 240 303.5 263.5Q280 287 280 320V800Q280 833 303.5 856.5Q327 880 360 880H720Q753 880 776.5 856.5Q800 833 800 800V320Q800 287 776.5 263.5Q753 240 720 240ZM360 320H720Q720 320 720.0 320.0Q720 320 720 320V800Q720 800 720.0 800.0Q720 800 720 800H360Q360 800 360.0 800.0Q360 800 360 800V320Q360 320 360.0 320.0Q360 320 360 320ZM200 80Q167 80 143.5 103.5Q120 127 120 160V720H200V160Q200 160 200.0 160.0Q200 160 200 160H640V80ZM360 320Q360 320 360.0 320.0Q360 320 360 320V800Q360 800 360.0 800.0Q360 800 360 800Q360 800 360.0 800.0Q360 800 360 800V320Q360 320 360.0 320.0Q360 320 360 320Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-dark_mode" viewBox="0 0 960 960"><path d="M480 120Q330 120 225.0 225.0Q120 330 120 480Q120 630 225.0 735.0Q330 840 480 840Q494 840 507.5 839.0Q521 838 534 836Q493 807 468.5 760.5Q444 714 444 660Q444 570 507.0 507.0Q570 444 660 444Q715 444 761.0 468.5Q807 493 836 534Q838 521 839.0 507.5Q840 494 840 480Q840 330 735.0 225.0Q630 120 480 120ZM480 200Q568 200 638.0 248.5Q708 297 740 375Q720 370 700.0 367.0Q680 364 660 364Q537 364 450.5 450.5Q364 537 364 660Q364 680 367.0 700.0Q370 720 375 740Q297 708 248.5 638.0Q200 568 200 480Q200 364 282.0 282.0Q364 200 480 200ZM470 470Q470 470 470.0 470.0Q470 470 470 470Q470 470 470.0 470.0Q470 470 470 470Q470 470 470.0 470.0Q470 470 470 470Q470 470 470.0 470.0Q470 470 470 470Q470 470 470.0 470.0Q470 470 470 470Q470 470 470.0 470.0Q470 470 470 470Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-delete" viewBox="0 0 960 960"><path d="M280 120Q247 120 223.5 143.5Q200 167 200 200V720H160V800H360V840H600V800H800V720H760V200Q760 167 736.5 143.5Q713 120 680 120ZM680 720H280V200Q280 200 280.0 200.0Q280 200 280 200H680Q680 200 680.0 200.0Q680 200 680 200ZM360 280H440V640H360ZM520 280H600V640H520ZM280 720V200Q280 200 280.0 200.0Q280 200 280 200Q280 200 280.0 200.0Q280 200 280 200Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-grid_view" viewBox="0 0 960 960"><path d="M120 520V840H440V520ZM120 120V440H440V120ZM520 520V840H840V520ZM520 120V440H840V120ZM200 600H360V760H200ZM600 600H760V760H600ZM600 200H760V360H600ZM200 200H360V360H200ZM600 600ZM600 360ZM360 360ZM360 600Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-home" viewBox="0 0 960 960"><path d="M240 200H360V440H600V200H720V560L480 740L240 560ZM160 120V600L480 840L800 600V120H520V360H440V120ZM480 470Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-info" viewBox="0 0 960 960"><path d="M440 280H520V520H440ZM480 600Q497 600 508.5 611.5Q520 623 520 640Q520 657 508.5 668.5Q497 680 480 680Q463 680 451.5 668.5Q440 657 440 640Q440 623 451.5 611.5Q463 600 480 600ZM480 80Q397 80 324.0 111.5Q251 143 197.0 197.0Q143 251 111.5 324.0Q80 397 80 480Q80 563 111.5 636.0Q143 709 197.0 763.0Q251 817 324.0 848.5Q397 880 480 880Q563 880 636.0 848.5Q709 817 763.0 763.0Q817 709 848.5 636.0Q880 563 880 480Q880 397 848.5 324.0Q817 251 763.0 197.0Q709 143 636.0 111.5Q563 80 480 80ZM480 160Q614 160 707.0 253.0Q800 346 800 480Q800 614 707.0 707.0Q614 800 480 800Q346 800 253.0 707.0Q160 614 160 480Q160 346 253.0 253.0Q346 160 480 160ZM480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-light_mode" viewBox="0 0 960 960"><path d="M480 360Q530 360 565.0 395.0Q600 430 600 480Q600 530 565.0 565.0Q530 600 480 600Q430 600 395.0 565.0Q360 530 360 480Q360 430 395.0 395.0Q430 360 480 360ZM480 280Q397 280 338.5 338.5Q280 397 280 480Q280 563 338.5 621.5Q397 680 480 680Q563 680 621.5 621.5Q680 563 680 480Q680 397 621.5 338.5Q563 280 480 280ZM200 440H40V520H200ZM920 440H760V520H920ZM440 760V920H520V760ZM440 40V200H520V40ZM256 650 155 747 212 806 308 706ZM748 154 651 255 704 310 805 213ZM650 704 747 805 806 748 706 652ZM154 212 255 309 310 256 213 155ZM480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-palette" viewBox="0 0 960 960"><path d="M480 80Q398 80 325.0 111.5Q252 143 197.5 197.5Q143 252 111.5 325.0Q80 398 80 480Q80 563 112.5 636.0Q145 709 200.5 763.0Q256 817 330.0 848.5Q404 880 488 880Q568 880 639.0 852.5Q710 825 763.5 776.5Q817 728 848.5 661.5Q880 595 880 518Q880 403 810.0 341.5Q740 280 640 280H566Q557 280 553.5 275.0Q550 270 550 264Q550 252 565.0 229.5Q580 207 580 178Q580 128 552.5 104.0Q525 80 480 80ZM480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480Q480 480 480.0 480.0Q480 480 480 480ZM260 440Q286 440 303.0 457.0Q320 474 320 500Q320 526 303.0 543.0Q286 560 260 560Q234 560 217.0 543.0Q200 526 200 500Q200 474 217.0 457.0Q234 440 260 440ZM380 600Q406 600 423.0 617.0Q440 634 440 660Q440 686 423.0 703.0Q406 720 380 720Q354 720 337.0 703.0Q320 686 320 660Q320 634 337.0 617.0Q354 600 380 600ZM580 600Q606 600 623.0 617.0Q640 634 640 660Q640 686 623.0 703.0Q606 720 580 720Q554 720 537.0 703.0Q520 686 520 660Q520 634 537.0 617.0Q554 600 580 600ZM700 440Q726 440 743.0 457.0Q760 474 760 500Q760 526 743.0 543.0Q726 560 700 560Q674 560 657.0 543.0Q640 526 640 500Q640 474 657.0 457.0Q674 440 700 440ZM480 160Q489 160 494.5 165.0Q500 170 500 178Q500 192 485.0 211.0Q470 230 470 268Q470 310 499.0 335.0Q528 360 570 360H640Q706 360 753.0 398.5Q800 437 800 518Q800 639 707.5 719.5Q615 800 488 800Q352 800 256.0 707.0Q160 614 160 480Q160 347 253.5 253.5Q347 160 480 160Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-restart_alt" viewBox="0 0 960 960"><path d="M440 122Q319 137 239.5 227.5Q160 318 160 440Q160 506 186.0 566.5Q212 627 260 672L317 615Q279 581 259.5 536.0Q240 491 240 440Q240 352 296.0 284.5Q352 217 440 202ZM520 122V202Q607 218 663.5 285.0Q720 352 720 440Q720 540 650.0 610.0Q580 680 480 680H477L521 636L465 580L325 720L465 860L521 804L477 760H480Q614 760 707.0 667.0Q800 574 800 440Q800 319 720.5 228.5Q641 138 520 122Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-search" viewBox="0 0 960 960"><path d="M784 120 532 372Q502 348 463.0 334.0Q424 320 380 320Q271 320 195.5 395.5Q120 471 120 580Q120 689 195.5 764.5Q271 840 380 840Q489 840 564.5 764.5Q640 689 640 580Q640 536 626.0 497.0Q612 458 588 428L840 176ZM380 400Q455 400 507.5 452.5Q560 505 560 580Q560 655 507.5 707.5Q455 760 380 760Q305 760 252.5 707.5Q200 655 200 580Q200 505 252.5 452.5Q305 400 380 400Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-toc" viewBox="0 0 960 960"><path d="M120 280V360H680V280ZM120 440V520H680V440ZM120 600V680H680V600ZM800 280Q783 280 771.5 291.5Q760 303 760 320Q760 337 771.5 348.5Q783 360 800 360Q817 360 828.5 348.5Q840 337 840 320Q840 303 828.5 291.5Q817 280 800 280ZM800 440Q783 440 771.5 451.5Q760 463 760 480Q760 497 771.5 508.5Q783 520 800 520Q817 520 828.5 508.5Q840 497 840 480Q840 463 828.5 451.5Q817 440 800 440ZM800 600Q783 600 771.5 611.5Q760 623 760 640Q760 657 771.5 668.5Q783 680 800 680Q817 680 828.5 668.5Q840 657 840 640Q840 623 828.5 611.5Q817 600 800 600Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-zoom_in" viewBox="0 0 960 960"><path d="M784 120 532 372Q502 348 463.0 334.0Q424 320 380 320Q271 320 195.5 395.5Q120 471 120 580Q120 689 195.5 764.5Q271 840 380 840Q489 840 564.5 764.5Q640 689 640 580Q640 536 626.0 497.0Q612 458 588 428L840 176ZM380 400Q455 400 507.5 452.5Q560 505 560 580Q560 655 507.5 707.5Q455 760 380 760Q305 760 252.5 707.5Q200 655 200 580Q200 505 252.5 452.5Q305 400 380 400ZM340 460V540H260V620H340V700H420V620H500V540H420V460Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-zoom_out" viewBox="0 0 960 960"><path d="M784 120 532 372Q502 348 463.0 334.0Q424 320 380 320Q271 320 195.5 395.5Q120 471 120 580Q120 689 195.5 764.5Q271 840 380 840Q489 840 564.5 764.5Q640 689 640 580Q640 536 626.0 497.0Q612 458 588 428L840 176ZM380 400Q455 400 507.5 452.5Q560 505 560 580Q560 655 507.5 707.5Q455 760 380 760Q305 760 252.5 707.5Q200 655 200 580Q200 505 252.5 452.5Q305 400 380 400ZM280 540V620H480V540Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+    <symbol id="ms-bookmark-fill" viewBox="0 0 960 960"><path d="M200 120V760Q200 793 223.5 816.5Q247 840 280 840H680Q713 840 736.5 816.5Q760 793 760 760V120L480 240Z" transform="translate(0 960) scale(1 -1)"/></symbol>
+  </svg>
+
   <div id="toasts" class="toasts" aria-live="polite"></div>
 
   <!-- حوار التأكيد -->
@@ -2250,18 +2317,18 @@
       <h4 id="confirmTitle" class="confirmTitle">تفريغ المحفوظات</h4>
       <p id="confirmMsg" class="confirmMsg">هل أنت متأكد؟</p>
       <div class="confirmBtns">
-        <button id="confirmYes" class="btn danger"><i class="material-symbols-outlined">delete</i> نعم، حذف الكل</button>
-        <button id="confirmNo" class="btn"><i class="material-symbols-outlined">close</i> إلغاء</button>
+        <button id="confirmYes" class="btn danger"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-delete"></use></svg> نعم، حذف الكل</button>
+        <button id="confirmNo" class="btn"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-close"></use></svg> إلغاء</button>
       </div>
     </div>
   </div>
 
   <header>
     <button id="headerThemeBtn" class="header-theme-btn" aria-label="تبديل المظهر">
-      <i class="material-symbols-outlined">dark_mode</i>
+      <svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-dark_mode"></use></svg>
     </button>
  <button id="headerAboutBtn" class="header-about-btn" aria-label="حول التطبيق">
-      <i class="material-symbols-outlined">info</i>
+      <svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-info"></use></svg>
     </button>
     <div class="wrap">
       <div class="titleBlock">
@@ -2278,24 +2345,24 @@
     <!-- زر فتح قائمة الكتب. تم استخدامه للعودة إلى شبكة بطاقات الكتب بدلاً من فتح قائمة منبثقة -->
     <button id="openPicker" class="pickerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="partsPicker"
       title="الكتب" aria-label="الكتب">
-      <span class="pIcon"><i class="material-symbols-outlined">grid_view</i></span>
+      <span class="pIcon"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-grid_view"></use></svg></span>
       <span>الرئيسية</span>
     </button>
 
     <button class="iconbtn" id="tocBtn" title="الفهرست" aria-label="الفهرست">
-      <i class="material-symbols-outlined">toc</i>
+      <svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-toc"></use></svg>
     </button>
 
     <div class="spacer"></div>
-    <button class="iconbtn" id="searchBtn" title="بحث" aria-label="بحث"><i class="material-symbols-outlined">search</i></button>
+    <button class="iconbtn" id="searchBtn" title="بحث" aria-label="بحث"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-search"></use></svg></button>
 
     <button class="iconbtn" id="savedToggle" title="المحفوظات" aria-label="المحفوظات">
-      <i class="material-symbols-outlined">bookmark</i>
+      <svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-bookmark"></use></svg>
       <span id="savedCount" class="badge-bubble">0</span>
     </button>
 
-    <button class="iconbtn" id="toolsToggle" title="لوحة الرسم" aria-label="لوحة الرسم"><i class="material-symbols-outlined">palette</i></button>
-    <button class="iconbtn" id="theme" title="تبديل المظهر" aria-label="تبديل المظهر"><i class="material-symbols-outlined">dark_mode</i></button>
+    <button class="iconbtn" id="toolsToggle" title="لوحة الرسم" aria-label="لوحة الرسم"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-palette"></use></svg></button>
+    <button class="iconbtn" id="theme" title="تبديل المظهر" aria-label="تبديل المظهر"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-dark_mode"></use></svg></button>
   </div>
 
   <main>
@@ -2343,19 +2410,19 @@
 
         <!-- الزر يظهر دائماً مع حالات مختلفة -->
         <button id="loadMore" class="loadMoreBtn">
-          <i class="material-symbols-outlined">arrow_downward</i>
+          <svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-arrow_downward"></use></svg>
           تحميل 25 مسألة أخرى
         </button>
       </div>
     </section>
   </main>
 
-  <button id="toTop" title="عودة للأعلى" aria-label="عودة للأعلى..."><i class="material-symbols-outlined">arrow_upward</i></button>
+  <button id="toTop" title="عودة للأعلى" aria-label="عودة للأعلى..."><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-arrow_upward"></use></svg></button>
   <div class="toolsOverlay" id="toolsOverlay"></div>
   <div class="bottomBar" id="bottomBar" role="toolbar" aria-label="أدوات العرض">
-    <button class="bbtn" id="zoomOut" title="تصغير"><i class="material-symbols-outlined">zoom_out</i></button>
-    <button class="bbtn" id="zoomReset" title="إعادة الحجم"><i class="material-symbols-outlined">aspect_ratio</i></button>
-    <button class="bbtn" id="zoomIn" title="تكبير"><i class="material-symbols-outlined">zoom_in</i></button>
+    <button class="bbtn" id="zoomOut" title="تصغير"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-zoom_out"></use></svg></button>
+    <button class="bbtn" id="zoomReset" title="إعادة الحجم"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-aspect_ratio"></use></svg></button>
+    <button class="bbtn" id="zoomIn" title="تكبير"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-zoom_in"></use></svg></button>
 
     <div class="palette" aria-label="لون الخط (للأسئلة/الأجوبة/الهوامش فقط)">
       <!-- (تم حذف الأصفر #facc15 للإبقاء على 6 ألوان فقط) -->
@@ -2367,13 +2434,13 @@
       <button class="swatch" data-ink="#f59e0b" title="عنبر"></button>
     </div>
 
-    <button class="bbtn" id="resetAll" title="إرجاع الافتراضي"><i class="material-symbols-outlined">restart_alt</i></button>
+    <button class="bbtn" id="resetAll" title="إرجاع الافتراضي"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-restart_alt"></use></svg></button>
   </div>
 
   <!-- شريط أدوات التحديد العائم -->
   <div id="selTools" class="selTools" role="toolbar" aria-label="أدوات التحديد">
-    <button id="copySel" class="miniBtn" title="نسخ" aria-label="نسخ"><i class="material-symbols-outlined">content_copy</i></button>
-    <button id="searchSel" class="miniBtn" title="بحث" aria-label="بحث"><i class="material-symbols-outlined">search</i></button>
+    <button id="copySel" class="miniBtn" title="نسخ" aria-label="نسخ"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-content_copy"></use></svg></button>
+    <button id="searchSel" class="miniBtn" title="بحث" aria-label="بحث"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-search"></use></svg></button>
   </div>
 
   <!-- نافذة منتقي الأجزاء (تم إخفاؤها لعدم الحاجة بعد استخدام بطاقات الأجزاء) -->
@@ -2382,7 +2449,7 @@
       <div id="partsPicker" class="picker" role="document" tabindex="-1" aria-labelledby="pickerTitle">
         <div class="pickerHeader">
           <h4 id="pickerTitle" class="pickerTitle">اختر جزء</h4>
-          <button id="closePicker" class="pickerClose" aria-label="إغلاق"><i class="material-symbols-outlined">close</i></button>
+          <button id="closePicker" class="pickerClose" aria-label="إغلاق"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-close"></use></svg></button>
         </div>
         <div id="pickerList" class="pickerList" role="listbox" aria-label="قائمة الكتب">
           <button class="pRow" role="option" data-val="" aria-selected="true">
@@ -2410,12 +2477,11 @@
     <div class="tocModal">
       <div class="tocHeader">
         <!-- زر الرجوع (يظهر فقط في وضع العناوين عندما ندخل من قائمة الأجزاء) -->
-        <button id="tocBackBtn" class="tocBackBtn" style="display:none;" aria-label="رجوع"><i
-            class="material-symbols-outlined">arrow_forward</i></button>
+        <button id="tocBackBtn" class="tocBackBtn" style="display:none;" aria-label="رجوع"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-arrow_forward"></use></svg></button>
 
         <h4 id="tocModalTitle" class="tocTitle">فهرست جميع الكتب</h4>
 
-        <button id="tocClose" class="tocClose" aria-label="إغلاق"><i class="material-symbols-outlined">close</i></button>
+        <button id="tocClose" class="tocClose" aria-label="إغلاق"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-close"></use></svg></button>
       </div>
       <div id="tocList" class="tocList"></div>
     </div>
@@ -2618,7 +2684,7 @@
       document.body.setAttribute('data-theme', theme);
       SETTINGS.theme = theme; saveSettings(SETTINGS);
 
-      const iconHtml = theme === 'dark' ? '<i class="material-symbols-outlined">light_mode</i>' : '<i class="material-symbols-outlined">dark_mode</i>';
+      const iconHtml = theme === 'dark' ? '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-light_mode"></use></svg>' : '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-dark_mode"></use></svg>';
       const label = theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن';
 
       // تحديث زر شريط الأدوات
@@ -2654,7 +2720,7 @@
       const wrap = document.getElementById('toasts');
       const el = document.createElement('div');
       el.className = 'toast';
-      el.innerHTML = `<div class="msg">${text}</div><button class="close" aria-label="إغلاق"><i class="material-symbols-outlined">close</i></button><div class="progress" style="animation-duration:${timeout}ms"></div>`;
+      el.innerHTML = `<div class="msg">${text}</div><button class="close" aria-label="إغلاق"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-close"></use></svg></button><div class="progress" style="animation-duration:${timeout}ms"></div>`;
       wrap.appendChild(el);
       const close = () => { el.style.opacity = '0'; el.style.transform = 'translateY(-6px)'; setTimeout(() => el.remove(), 160); };
       el.querySelector('.close').onclick = close; setTimeout(close, timeout);
@@ -2732,9 +2798,9 @@
         const scopeTxt = partVal ? partFullLabel(partVal) : 'جميع الكتب';
         html = `<span class="titleIconOne">🔎</span>مسائل رقم ${GO_ORDER} من ${scopeTxt} (${count})${suffix}`;
       } else if (HEADER_MODE) {
-        html = `<span class="titleIconOne"><i class="material-symbols-outlined tocBlue">toc</i></span>عدد مسائل العنوان (${count})${suffix}`;
+        html = `<span class="titleIconOne"><svg class="msvg tocBlue" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-toc"></use></svg></span>عدد مسائل العنوان (${count})${suffix}`;
       } else if (SAVED_MODE) {
-        html = `<span class="titleIconOne"><i class="material-symbols-outlined" style="color:#e11d48; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">bookmark</i></span>المسائل المحفوظة (${count})`;
+        html = `<span class="titleIconOne"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false" style="color:#e11d48; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;"><use href="#ms-bookmark-fill"></use></svg></span>المسائل المحفوظة (${count})`;
       } else {
         // صورة غلاف الكتاب بدل أيقونة 📚
         const label = partVal ? partFullLabel(partVal) : 'جميع الكتب';
@@ -2828,8 +2894,8 @@
       const qaHTML = renderQABlocks(it, qStr);
       const savedNow = SAVED.has(id);
       const saveIconHtml = savedNow
-        ? '<i class="material-symbols-outlined" style="color:#e11d48; font-variation-settings: \'FILL\' 1, \'wght\' 400, \'GRAD\' 0, \'opsz\' 24;">bookmark</i>'
-        : '<i class="material-symbols-outlined">bookmark</i>';
+        ? '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false" style="color:#e11d48; font-variation-settings: \'FILL\' 1, \'wght\' 400, \'GRAD\' 0, \'opsz\' 24;"><use href="#ms-bookmark"></use></svg>'
+        : '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-bookmark"></use></svg>';
       const saveTitle = savedNow ? 'إزالة من المحفوظات' : 'حفظ المسألة';
       return `<article class="card" data-id="${id}">
         <div class="cardHead">
@@ -2837,10 +2903,15 @@
           <div class="headBottom">
             <div class="headLeft">${prob}</div>
             <div class="shareWrap">
-              <button class="copyBtn" title="نسخ المسألة" aria-label="نسخ المسألة" data-id="${id}"><i class="material-symbols-outlined">content_copy</i></button>
+              <button class="copyBtn" title="نسخ المسألة" aria-label="نسخ المسألة" data-id="${id}"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-content_copy"></use></svg></button>
               <button class="saveBtn" title="${saveTitle}" aria-label="${saveTitle}" data-id="${id}" aria-pressed="${savedNow ? 'true' : 'false'}">
               ${saveIconHtml}
             </button>
+              <button class="imgShareBtn" title="مشاركة كصورة" aria-label="مشاركة كصورة" data-id="${id}"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-aspect_ratio"></use></svg></button>
+              <div class="imgShareMenu" data-id="${id}" aria-hidden="true">
+                <button class="imgShareAction" data-action="download" data-id="${id}">تنزيل</button>
+                <button class="imgShareAction" data-action="share" data-id="${id}">مشاركة</button>
+              </div>
             </div>
           </div>
         </div>
@@ -3057,18 +3128,18 @@
         // أقل من 25 مسألة - الوضع الطافي
         loadMoreBtn.style.display = 'inline-flex';
         loadMoreBtn.classList.add('floating');
-        loadMoreBtn.innerHTML = '<i class="material-symbols-outlined">check</i> تم تحميل جميع المسائل';
+        loadMoreBtn.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-check"></use></svg> تم تحميل جميع المسائل';
         loadMoreBtn.disabled = true;
       } else if (itemsToShow >= TOTAL_ITEMS) {
         // تم تحميل كل المسائل
         loadMoreBtn.style.display = 'inline-flex';
         loadMoreBtn.classList.add('completed');
-        loadMoreBtn.innerHTML = '<i class="material-symbols-outlined">check</i> تم تحميل جميع المسائل';
+        loadMoreBtn.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-check"></use></svg> تم تحميل جميع المسائل';
         loadMoreBtn.disabled = true;
       } else {
         // أكثر من 25 مسألة - وضع تحميل المزيد
         loadMoreBtn.style.display = 'inline-flex';
-        loadMoreBtn.innerHTML = '<i class="material-symbols-outlined">arrow_downward</i> تحميل 25 مسألة أخرى';
+        loadMoreBtn.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-arrow_downward"></use></svg> تحميل 25 مسألة أخرى';
         loadMoreBtn.disabled = false;
       }
     }
@@ -3105,7 +3176,7 @@
         const msg = GO_MODE
           ? 'لا توجد مسائل بهذا الرقم في النطاق المحدد.'
           : (SAVED_MODE
-            ? 'لا توجد مسائل محفوظة . استخدم أيقونة <i class="material-symbols-outlined">bookmark</i> داخل البطاقات للحفظ.'
+            ? 'لا توجد مسائل محفوظة . استخدم أيقونة <svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-bookmark"></use></svg> داخل البطاقات للحفظ.'
             : (HEADER_MODE ? 'لا توجد مسائل تحت هذا العنوان.' : 'لا توجد نتائج مطابقة لبحثك.'));
         $('#list').innerHTML = `<div style="text-align:center;color:var(--muted);padding:20px;border:1px dashed var(--border);border-radius:14px;background:var(--card);">${msg}</div>`;
         return;
@@ -3204,11 +3275,11 @@
           }
           
           if (copied) {
-            btn.innerHTML = '<i class="material-symbols-outlined">check</i>';
+            btn.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-check"></use></svg>';
             btn.classList.add('copied');
             toast('تم النسخ');
             setTimeout(() => {
-              btn.innerHTML = '<i class="material-symbols-outlined">content_copy</i>';
+              btn.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-content_copy"></use></svg>';
               btn.classList.remove('copied');
             }, 2000);
           } else {
@@ -3232,7 +3303,7 @@
       bottomBar.classList.toggle('open', open);
       toolsOverlay.classList.toggle('show', open);
       toolsToggle.setAttribute('aria-expanded', String(open));
-      toolsToggle.innerHTML = open ? '<i class="material-symbols-outlined">close</i>' : '<i class="material-symbols-outlined">palette</i>';
+      toolsToggle.innerHTML = open ? '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-close"></use></svg>' : '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-palette"></use></svg>';
     }
     toolsToggle.onclick = (e) => { e.stopPropagation(); setBar(!barOpen); };
     toolsOverlay.onclick = () => setBar(false);
@@ -3261,8 +3332,8 @@
       return new Promise(resolve => {
         const ov = $('#confirmOverlay'), t = $('#confirmTitle'), m = $('#confirmMsg'), y = $('#confirmYes'), n = $('#confirmNo');
         t.textContent = title; m.textContent = message;
-        y.innerHTML = '<i class="material-symbols-outlined">delete</i> ' + yesText;
-        n.innerHTML = '<i class="material-symbols-outlined">close</i> ' + noText;
+        y.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-delete"></use></svg> ' + yesText;
+        n.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-close"></use></svg> ' + noText;
         ov.style.display = 'flex';
         ov.setAttribute('aria-hidden', 'false');
         const focusables = Array.from(ov.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])'));
@@ -3294,7 +3365,7 @@
       homeBtn.className = 'iconbtn';
       homeBtn.title = 'العودة للصفحة الرئيسية';
       homeBtn.setAttribute('aria-label', 'العودة للصفحة الرئيسية');
-      homeBtn.innerHTML = '<i class="material-symbols-outlined">home</i>';
+      homeBtn.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-home"></use></svg>';
       homeBtn.style.display = 'none';
       partHolder.prepend(homeBtn);
       homeBtn.addEventListener('click', () => { setSavedMode(false); setHeaderMode(false); setGoMode(null); CUR_PART = ''; SETTINGS.filterPart = ''; saveSettings(SETTINGS); resetPagination(); });
@@ -3303,7 +3374,7 @@
       if (searchDock && searchRow) {
         searchDock.appendChild(searchRow);
         const closeBtn = document.createElement('button');
-        closeBtn.className = 'closeSearch'; closeBtn.id = 'closeSearch'; closeBtn.innerHTML = '<i class="material-symbols-outlined">close</i>';
+        closeBtn.className = 'closeSearch'; closeBtn.id = 'closeSearch'; closeBtn.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-close"></use></svg>';
         closeBtn.setAttribute('title', 'إغلاق'); closeBtn.setAttribute('aria-label', 'إغلاق البحث');
         searchRow.appendChild(closeBtn);
         closeBtn.onclick = () => {
@@ -3351,11 +3422,11 @@
       if (SAVED_MODE) {
         btn.title = 'تفريغ المحفوظات';
         btn.setAttribute('aria-label', 'تفريغ المحفوظات');
-        btn.innerHTML = '<i class="material-symbols-outlined">restart_alt</i><span id="savedCount" class="badge-bubble">' + SAVED.size + '</span>';
+        btn.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-restart_alt"></use></svg><span id="savedCount" class="badge-bubble">' + SAVED.size + '</span>';
       } else {
         btn.title = 'المحفوظات';
         btn.setAttribute('aria-label', 'المحفوظات');
-        btn.innerHTML = '<i class="material-symbols-outlined">bookmark</i><span id="savedCount" class="badge-bubble">' + SAVED.size + '</span>';
+        btn.innerHTML = '<svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-bookmark"></use></svg><span id="savedCount" class="badge-bubble">' + SAVED.size + '</span>';
       }
       updateSavedBadge();
     }
@@ -4066,7 +4137,7 @@
   </script>
      <div id="aboutModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
-      <button id="closeAboutBtn" class="close-modal"><i class="material-symbols-outlined">close</i></button>
+      <button id="closeAboutBtn" class="close-modal"><svg class="msvg" viewBox="0 0 960 960" aria-hidden="true" focusable="false"><use href="#ms-close"></use></svg></button>
       
       <div class="modal-body">
         <iframe id="aboutFrame" src="" frameborder="0"></iframe>
@@ -4181,6 +4252,8 @@
 
   })();
 </script>
+
+<script src="./share-image.js"></script>
 
 </body>
 

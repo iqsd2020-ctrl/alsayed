@@ -1,5 +1,5 @@
 /* Service Worker - منهج النور */
-const CACHE_VERSION = 'v3';;
+const CACHE_VERSION = 'v4';;
 const CACHE_NAME = `manhaj-alnoor-${CACHE_VERSION}`;
 
 // ملفات أساسية (عدّل/زد القائمة إذا رغبت لاحقاً)
@@ -9,6 +9,8 @@ const CORE_ASSETS = [
   './manifest.json',
   './favicon.png',
   './sejo.html',
+  './share-image.js',
+  './icon-192.png',
 
   // Fonts (محلية)
   './ABO-THAR.TTF',
