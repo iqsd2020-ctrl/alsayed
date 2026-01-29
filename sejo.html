@@ -71,6 +71,19 @@
       padding: 1vh 2vw;
     }
 
+    /* الخلفية المزخرفة (SVG) */
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .06;
+      background-image: url('sejo.svg');
+      background-repeat: repeat;
+      background-size: 120px 120px;
+      z-index: 0;
+    }
+
     .overlay {
       position: absolute;
       inset: 0;
@@ -98,7 +111,23 @@
       padding: 2vh 3vw;
       overflow: hidden;
     }
+/* زخرفة SVG داخل الصندوق الأبيض */
+    .container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .06;
+      background-image: url('sejo.svg');
+      background-repeat: repeat;
+      background-size: 120px 120px;
+      z-index: 0;
+    }
 
+    .container > * {
+      position: relative;
+      z-index: 1;
+    }
     .content-scrollable {
       flex: 1;
       overflow-y: auto;
