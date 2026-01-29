@@ -1,352 +1,4266 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="scroll-smooth">
+<html lang="ar" dir="rtl" data-theme="light">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>منهج النور</title>
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="manifest" href="manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest"></script>
-<link rel="stylesheet" href="style.css">
-<script>
-tailwind.config = {
-darkMode: 'class',
-theme: {
-extend: {
-colors: {
-primary: {
-50: '#f0f9ff',
-100: '#e0f2fe',
-500: '#0ea5e9',
-600: '#0284c7',
-900: '#0c4a6e',
-},
-accent: {
-gold: '#ca8a04',
-light: '#fde047',
-},
-dark: {
-bg: '#0f172a',
-card: '#1e293b',
-}
-},
-fontFamily: {
-'headings': ['Amiri', 'serif'],
-'ui': ['Cairo', 'sans-serif'],
-},
-animation: {
-'slide-up': 'slideUp 0.4s ease-out forwards',
-},
-keyframes: {
-slideUp: {
-'0%': { transform: 'translateY(20px)', opacity: '0' },
-'100%': { transform: 'translateY(0)', opacity: '1' },
-}
-}
-}
-}
-}
-</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <title>منهج النور</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --bg: #184e77;
+      --card: #fff;
+      --ink: #0b355d;
+      --qa-ink: var(--ink);
+      --foot-ink: var(--ink);
+      --muted: #6b7280;
+      --accent: #38bdf8;
+      --border: #e5e7eb;
+      --radius: 16px;
+      --shadow: 0 8px 24px rgba(0, 0, 0, .06);
+      --gray-soft: #f3f4f6;
+      --zoom: 1;
+      --skybar-h: 56px;
+      --sel-bg: rgba(16, 185, 129, 0.35);
+      --sel-fg: #111;
+      --ov-bg: rgba(15, 23, 42, .45);
+      --picker-bg: #ffffff;
+      --picker-br: #e5e7eb;
+      --picker-row-hover: color-mix(in oklab, var(--accent) 20%, transparent);
+    }
+
+    [data-theme="dark"] {
+      /* خلفية سوداء تماماً */
+      --bg: #000000;
+      /* البطاقات سوداء مع لمسة خضراء خفيفة جداً للتمييز عن الخلفية */
+      --card: #050806;
+      /* النص أبيض ناصع للقراءة */
+      --ink: #ffffff;
+      /* النص الثانوي أخضر باهت */
+      --muted: #86efac;
+      /* لون التمييز أخضر نيون (Matrix Green) */
+      --accent: #22c55e;
+      /* الحدود غامقة جداً وتكاد تختفي */
+      --border: #142e23;
+      --gray-soft: #0a0f0d;
+      --sel-bg: #10b981;
+      --sel-fg: #000000;
+      --ov-bg: rgba(0, 0, 0, .98);
+      --picker-bg: #050806;
+      --picker-br: #142e23;
+      --picker-row-hover: color-mix(in oklab, var(--accent) 15%, transparent);
+      --foot-ink: #d1fae5;
+    }
+
+    ::selection {
+      background: var(--sel-bg);
+      color: var(--sel-fg);
+    }
+
+    ::-moz-selection {
+      background: var(--sel-bg);
+      color: var(--sel-fg);
+    }
+
+    /* تقليل قائمة المتصفح عند الضغط المطوّل (بدون إلغاء التحديد نفسه) */
+    body {
+      -webkit-touch-callout: none;
+    }
+
+    /* تقليل التحديد غير المقصود في عناصر الواجهة */
+    button,
+    .iconbtn,
+    .skybar,
+    .filtersBar,
+    .bottomBar,
+    .share-menu,
+    .pickerOverlay,
+    .picker,
+    .modal-overlay,
+    .toastWrap,
+    #selTools {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* إبقاء التحديد طبيعي داخل نصوص المحتوى */
+    .qtext,
+    .abox,
+    .footnotes,
+    .hdrTitle {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    /* غطاء منطقة Status Bar */
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: env(safe-area-inset-top, 0px);
+      background: var(--bg);
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Amiri", system-ui, sans-serif;
+      background: #eef3f8;
+      color: var(--ink)
+    }
+
+    body[data-theme="dark"] {
+      /* تدرج من الأخضر الليلي العميق جداً في الأعلى إلى الأسود الكامل */
+      background: radial-gradient(circle at 50% 0%, #022c22, #000000);
+      background-attachment: fixed;
+      color: var(--ink)
+    }
+
+    /* الخلفية المزخرفة */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: .06;
+      pointer-events: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23009B77"/><stop offset="100%" stop-color="%23002F24"/></linearGradient><pattern id="p" width="60" height="60" patternUnits="userSpaceOnUse"><g fill="none" stroke="url(%23g)" stroke-width="1.6"><polygon points="30,2 58,30 30,58 2,30 30,2"/><path d="M30 0 L30 60 M0 30 L60 30 M8 8 L52 52 M52 8 L8 52"/></g></pattern></defs><rect width="100%" height="100%" fill="url(%23p)"/></svg>');
+      background-size: 120px 120px
+    }
+
+    body[data-theme="dark"]::before {
+      opacity: .03;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23009B77"/><stop offset="100%" stop-color="%23002F24"/></linearGradient><pattern id="p" width="60" height="60" patternUnits="userSpaceOnUse"><g fill="none" stroke="url(%23g)" stroke-width="1.6"><polygon points="30,2 58,30 30,58 2,30 30,2"/><path d="M30 0 L30 60 M0 30 L60 30 M8 8 L52 52 M52 8 L8 52"/></g></pattern></defs><rect width="100%" height="100%" fill="url(%23p)"/></svg>');
+    }
+
+    header {
+      /* الوضع الفاتح: أخضر متدرج */
+      background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+      color: #fff;
+      padding: 18px 16px;
+      padding-top: calc(18px + env(safe-area-inset-top, 0px));
+      position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s ease;
+    }
+
+    /* الوضع الداكن: خلفية داكنة جداً */
+    [data-theme="dark"] header {
+      background: #020403; /* أسود مع لمسة خضراء خفيفة جداً */
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+
+    header .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative
+    }
+
+    .titleBlock {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+      text-align: center
+    }
+
+    .titleBlock h1 {
+      margin: 0;
+      font-size: 1.4rem
+    }
+
+    .titleBlock .sub {
+      margin: 0;
+      color: rgba(255, 255, 255, .85);
+      font-size: .95rem
+    }
+
+    @media (max-width:360px) {
+      .titleBlock .sub {
+        font-size: .8rem
+      }
+
+      #listTitle {
+        font-size: 1rem
+      }
+
+      .tocTitle {
+        font-size: 1rem !important;
+      }
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 18px auto 36px;
+      padding: 0 16px
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px; /* زوايا أكثر استدارة */
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04); /* ظل ناعم جداً */
+      padding: 20px; /* مساحة داخلية أوسع للقراءة المريحة */
+      position: relative;
+      margin-bottom: 16px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); /* تأثير طفيف عند التحويم */
+    }
+
+    .sectionHead {
+      position: relative;
+      padding: 4px 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .centerTitle {
+      margin: 0;
+      text-align: center
+    }
+
+    #listTitle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%
+    }
+
+    .titleIconOne {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      margin-inline-end: 4px;
+      line-height: 1;
+      vertical-align: middle;
+    }
+.listTitleCover{
+      width: 1.15em;
+      height: 1.15em;
+      object-fit: cover;
+      border-radius: 4px;
+      display: block;
+    }
+    .filtersBar {
+      background: color-mix(in oklab, var(--accent) 14%, transparent);
+      border: 1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+      border-radius: 14px;
+      padding: 12px;
+      margin: 8px 0 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25)
+    }
+
+    [data-theme="dark"] .filtersBar {
+      background: color-mix(in oklab, var(--accent) 18%, transparent);
+      border-color: color-mix(in oklab, var(--accent) 46%, transparent)
+    }
+
+    .filtersBar .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-items: end
+    }
+
+    .filtersBar label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: .9rem
+    }
+
+    .partRowHidden {
+      display: none !important;
+    }
+
+    /* عناصر الإدخال المصممة */
+    input,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--ink);
+      height: 40px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      outline: none;
+    }
+
+    /* الس arrow المخصص للقوائم، بما فيها قائمة "عرض:" */
+    .select-caret {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%2394a3b8" d="M3.2 5h9.6L8 10.5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: left 12px center;
+      background-size: 16px;
+      padding-left: 36px
+    }
+
+    [data-theme="dark"] .select-caret {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%23e2e8f0" d="M3.2 5h9.6L8 10.5z"/></svg>');
+    }
+
+    #list {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(0, 1fr)
+    }
+
+    #list>article.card {
+      width: 100%;
+      min-width: 0;
+      content-visibility: auto;
+      contain-intrinsic-size: 0 300px
+    }
+
+    @font-face {
+      font-family: 'AboThar';
+      src: url('ABO-THAR.TTF') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap
+    }
+
+    @font-face {
+      font-family: 'LotusLight';
+      src: url('lotus-linotype-light.ttf') format('truetype');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap
+    }
+
+    @font-face {
+      font-family: 'LotusBold';
+      src: url('lotus-linotype-bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap
+    }
+    @font-face {
+      font-family: 'Amiri';
+      src: url('amiri.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+@font-face {
+      font-family: 'Material Symbols Outlined';
+      src: url('MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf') format('truetype');
+      font-weight: 100 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 1em;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    
+    .picker,
+    .pRow,
+    .pLabel,
+    #pageSize,
+    .select-caret,
+    .pickerTitle {
+      font-family: "Amiri", system-ui, sans-serif !important;
+      font-variant-numeric: lining-nums;
+      font-feature-settings: "lnum" 1;
+    }
+
+    .hdrCard {
+      position: sticky;
+      top: calc(4px + var(--skybar-gap, 0px));
+      z-index: 3;
+      background: color-mix(in oklab, var(--accent) 18%, var(--card));
+      border: 1px solid color-mix(in oklab, var(--accent) 46%, var(--card));
+      border-radius: 16px;
+      padding: 10px 12px;
+      text-align: center;
+      /* تم إزالة box-shadow هنا لحل المشكلة الأولى */
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .hdrCard {
+      background: color-mix(in oklab, var(--accent) 28%, var(--card));
+      border-color: color-mix(in oklab, var(--accent) 56%, var(--card));
+    }
+
+.qtext {
+      font-family: "LotusLight", "AboThar", "Amiri", system-ui, sans-serif;
+      font-weight: 300;
+      margin: 8px 0 16px; /* مسافات مدروسة */
+      font-size: calc(1.15rem * var(--zoom));
+      color: var(--qa-ink);
+      text-align: justify;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.8;
+      padding: 0 4px;
+    }
+    .abox {
+      font-family: "LotusBold", "AboThar", "Amiri", system-ui, sans-serif;
+      font-weight: 700;
+      /* خلفية خضراء فاتحة جداً (Minty) تتناسب مع الهوية */
+      background: #f0fdf4; 
+      /* حدود خضراء باهتة جداً */
+      border: 1px solid rgba(5, 150, 105, 0.1);
+      /* الشريط الجانبي الأخضر الأساسي */
+      border-right: 4px solid #059669; 
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin: 12px 0 0;
+      color: var(--qa-ink);
+      text-align: justify;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 2;
+      position: relative;
+      font-size: calc(1.15rem * var(--zoom));
+    }
+
+    /* تعديل الوضع الداكن للجواب */
+    [data-theme="dark"] .abox {
+      /* خلفية خضراء غامقة شفافة فوق خلفية البطاقة السوداء */
+      background: rgba(5, 150, 105, 0.08); 
+      /* حدود خضراء خفيفة لتحديد الصندوق */
+      border-color: rgba(5, 150, 105, 0.2);
+      /* شريط جانبي أخضر مشع للتباين */
+      border-right: 4px solid #10b981; 
+    }
+
+    .abox::before {
+      content: none !important
+    }
+
+    .abox p {
+      margin: 0 0 .5em
+    }
+
+    .abox p:last-child {
+      margin-bottom: 0
+    }
+
+    [data-theme="dark"] .abox {
+      background: #0a0f0d;
+      border: none;
+      /* خط جانبي أخضر مشع */
+      border-right: 3px solid rgba(34, 197, 94, .6);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 10px 26px rgba(0, 0, 0, .5);
+    }
+
+    .abox :where(mark, .hl) {
+      background: #fff59d;
+      color: #111;
+      padding: 0 .15em;
+      border-radius: .25em
+    }
+
+    [data-theme="dark"] .abox :where(mark, .hl) {
+      background: #fff59d;
+      color: #111
+    }
+
+/* التصحيح المطلوب فقط: إصلاح مشكلة انكسار الأقواس في الهوامش */
+    .footnotes {
+      font-family: "LotusBold", "AboThar", "Amiri", system-ui, sans-serif;
+      margin-top: 8px;
+      color: var(--foot-ink);
+      font-size: calc(1.02rem * var(--zoom));
+      text-align: justify;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.8
+    }
+    .footnotes::before {
+      content: "";
+      display: block;
+      height: 1px;
+      background: var(--border);
+      margin: 6px 0 8px
+    }
+
+    .footnotes .fn-item {
+      display: flex;
+      align-items: baseline;
+      gap: .3em;
+      flex-wrap: nowrap;
+      /* منع التفاف العناصر */
+      white-space: nowrap;
+      /* منع كسر النص */
+    }
+
+    .footnotes .fn-idx {
+      flex-shrink: 0;
+      /* منع تقلص الرقم */
+      direction: ltr;
+      /* الحفاظ على اتجاه الأقواس */
+      unicode-bidi: embed;
+    }
+
+    .footnotes .fn-item span:last-child {
+      white-space: normal;
+      /* السماح بكسر النص العادي فقط */
+      word-break: break-word;
+      flex: 1;
+      /* السماح للنص بأخذ المساحة المتبقية */
+    }
+
+.hdrTitle {
+      font-family: "LotusBold", "AboThar", "Amiri", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 1.18rem;
+      color: color-mix(in oklab, var(--ink) 88%, #000);
+      display: block;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    [data-theme="dark"] .hdrTitle {
+      color: color-mix(in oklab, var(--ink) 92%, #fff);
+    }
+
+.badge-prob {
+      font-family: "LotusBold", "AboThar", "Amiri", system-ui, sans-serif;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.18rem;
+      color: var(--qa-ink);
+    }
+    .badge-prob::before {
+      content: "(";
+      margin-inline: 4px
+    }
+
+    .badge-prob::after {
+      content: "):";
+      margin-inline: 4px
+    }
+
+    .badge-part {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: color-mix(in oklab, var(--accent) 16%, transparent);
+      color: color-mix(in oklab, var(--accent) 85%, #000);
+      border: 1px solid color-mix(in oklab, var(--accent) 46%, transparent);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: .8rem
+    }
+
+    [data-theme="dark"] .badge-part {
+      background: color-mix(in oklab, var(--accent) 26%, transparent);
+      color: color-mix(in oklab, var(--accent) 98%, #fff);
+      border-color: color-mix(in oklab, var(--accent) 52%, transparent)
+    }
+
+    .cardHead {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .headTop {
+      display: flex;
+      justify-content: center;
+    }
+
+    .headBottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: nowrap;
+    }
+
+    .headLeft {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0
+    }
+
+    .headLeft .badge-part {
+      white-space: normal;
+      word-break: break-word
+    }
+
+    .headLeft .badge-prob {
+      flex-shrink: 0
+    }
+
+    .shareWrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 4px; /* تقريب الأزرار من بعضها */
+      flex-shrink: 0;
+      justify-content: flex-end
+    }
+
+    .shareBtn,
+    .saveBtn,
+    .copyBtn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%; /* تحويلها لدائرية */
+      border: 1px solid transparent; /* حدود مخفية */
+      background: transparent; /* خلفية شفافة */
+      color: var(--muted); /* لون باهت */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+    }
+    
+    /* عند التحويم أو التفعيل */
+    .shareBtn:hover,
+    .saveBtn:hover,
+    .copyBtn:hover,
+    .saveBtn[aria-pressed="true"] {
+      background: rgba(5, 150, 105, 0.1); /* خلفية خضراء شفافة */
+      color: #059669; /* تلوين الأيقونة بالأخضر */
+      transform: scale(1.05);
+    }
+
+    /* تصحيح زر الحفظ النشط */
+    .saveBtn[aria-pressed="true"] {
+      color: #e11d48; /* إبقاء القلب أحمر عند الحفظ */
+      background: rgba(225, 29, 72, 0.1);
+    }
+
+    [data-theme="dark"] .shareBtn,
+    [data-theme="dark"] .saveBtn,
+    [data-theme="dark"] .copyBtn {
+      color: var(--muted);
+    }
+    
+    [data-theme="dark"] .shareBtn:hover, 
+    [data-theme="dark"] .copyBtn:hover {
+       color: #34d399;
+       background: rgba(52, 211, 153, 0.15);
+    }
+
+    .copyBtn.copied {
+      color: #22c55e;
+      border-color: #22c55e;
+    }
+
+    .share-menu {
+      position: absolute;
+      top: 52px;
+      inset-inline-end: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .15);
+      padding: 12px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: .18s;
+      z-index: 5
+    }
+
+    .share-menu.open {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .share-chip {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 50%
+    }
+
+    .share-tele {
+      color: #229ED9
+    }
+
+    .share-wa {
+      color: #25D366
+    }
+
+    .share-x {
+      color: #111827
+    }
+
+    .share-fb {
+      color: #1877F2
+    }
+
+    [data-theme="dark"] .share-tele {
+      color: #38bdf8
+    }
+
+    [data-theme="dark"] .share-wa {
+      color: #34d399
+    }
+
+    [data-theme="dark"] .share-x {
+      color: #e2e8f0
+    }
+
+    [data-theme="dark"] .share-fb {
+      color: #60a5fa
+    }
+
+    mark.hl {
+      background: #fff59d;
+      color: #000;
+      padding: 0 .15em;
+      border-radius: .25em
+    }
+
+    [data-theme="dark"] mark.hl {
+      background: #fff59d;
+      color: #111
+    }
+
+    .pagesBar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+      flex-wrap: wrap
+    }
+
+    .pagination {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .page {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      background: var(--card);
+      color: var(--ink)
+    }
+
+    .page.active {
+      background: var(--bg);
+      color: #fff;
+      border-color: transparent
+    }
+
+    [data-theme="dark"] .page.active {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: transparent;
+    }
+
+    .navbtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    [data-theme="dark"] .navbtn {
+      border-color: var(--border);
+      background: var(--card);
+      color: var(--ink);
+    }
+
+    .navbtn[disabled] {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    /* تصميم القائمة المخصصة لعرض البطاقات */
+    .pageSize {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+
+    .custom-select {
+      position: relative;
+      min-width: 94px;
+    }
+
+.select-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--ink);
+      font-family: "Amiri", system-ui, sans-serif;
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+    .select-trigger:hover {
+      border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+    }
+
+    .select-trigger:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 20%, transparent);
+    }
+
+    .select-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 4px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: all .2s ease;
+    }
+
+    .select-options.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: background .15s ease;
+      color: var(--ink);
+    }
+
+    .option:hover {
+      background: color-mix(in oklab, var(--accent) 10%, transparent);
+    }
+
+    .option:first-child {
+      border-radius: 11px 11px 0 0;
+    }
+
+    .option:last-child {
+      border-radius: 0 0 11px 11px;
+    }
+
+    .check-icon {
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity .15s ease;
+      font-size: .9rem;
+    }
+
+    .option[aria-selected="true"] .check-icon {
+      opacity: 1;
+    }
+
+    .selected-value {
+      font-weight: 600;
+    }
+
+    [data-theme="dark"] .select-options {
+      background: var(--card);
+      border-color: var(--border);
+    }
+
+    [data-theme="dark"] .select-trigger {
+      background: var(--card);
+      border-color: var(--border);
+      color: var(--ink);
+    }
+
+    /* ← التعديل المطلوب فقط: إزالة الخلفية الزرقاء مع إبقاء الحافة اليسرى */
+    .card.highlighted {
+      border-left: 4px solid var(--accent);
+      background: var(--card) !important;
+      /* كانت: color-mix(..., 5%) */
+      transition: all .3s ease;
+    }
+
+    .jumpFlash {
+      animation: enhancedJumpFlash 1.2s ease-out both;
+      border-color: color-mix(in oklab, var(--accent) 70%, transparent) !important;
+      box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 30%, transparent),
+        0 8px 32px rgba(56, 189, 248, 0.15) !important;
+    }
+
+    @keyframes enhancedJumpFlash {
+      0% {
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0), 0 0 0 0 rgba(56, 189, 248, 0.1);
+        transform: scale(1);
+      }
+
+      30% {
+        box-shadow: 0 0 0 8px rgba(56, 189, 248, 0.25), 0 8px 32px rgba(56, 189, 248, 0.2);
+        transform: scale(1.02);
+      }
+
+      70% {
+        box-shadow: 0 0 0 12px rgba(56, 189, 248, 0.1), 0 8px 32px rgba(56, 189, 248, 0.15);
+        transform: scale(1.01);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0), 0 8px 32px rgba(56, 189, 248, 0.1);
+        transform: scale(1);
+      }
+    }
+
+    #toTop {
+      position: fixed;
+      inset-inline-end: 18px;
+      inset-block-end: calc(18px + env(safe-area-inset-bottom));
+      /* خلفية خضراء شفافة جداً (زجاجية) */
+      background: rgba(5, 150, 105, 0.1);
+      /* حدود خضراء خفيفة */
+      border: 1px solid rgba(5, 150, 105, 0.3);
+      color: var(--ink); /* لون النص يعود للون الحبر العادي */
+      box-shadow: var(--shadow);
+      width: 40px; /* العودة للحجم الطبيعي */
+      height: 40px;
+      border-radius: 12px; /* العودة للحواف المربعة قليلاً */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s, transform .2s;
+      z-index: 98;
+    }
+
+    #toTop:hover {
+      /* زيادة التظليل عند التحويم */
+      background: rgba(5, 150, 105, 0.2);
+      border-color: rgba(5, 150, 105, 0.5);
+      transform: translateY(-2px);
+    }
+
+    [data-theme="dark"] #toTop {
+      background: color-mix(in oklab, var(--accent) 32%, transparent);
+      border-color: color-mix(in oklab, var(--accent) 62%, transparent)
+    }
+
+    #toTop.show {
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .toolsOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 98;
+      background: transparent;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+      display: none;
+    }
+
+    .toolsOverlay.show {
+      display: block;
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .bottomBar {
+      position: fixed;
+      z-index: 99;
+      left: 50%;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      transform: translate(-50%, 110%);
+      width: fit-content;
+      max-width: 96vw;
+      background: color-mix(in oklab, var(--card) 92%, transparent);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      transition: transform .22s ease, opacity .18s ease;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .bottomBar.open {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .bbtn {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: var(--shadow)
+    }
+
+    .bbtn:hover {
+      transform: translateY(-1px)
+    }
+
+    .palette {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      padding: 0 4px;
+      overflow: auto
+    }
+
+    .palette::-webkit-scrollbar {
+      height: 6px
+    }
+
+    .swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .08)
+    }
+
+    .skybar {
+      position: sticky;
+      top: env(safe-area-inset-top, 0px);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 8px; /* تقليل المسافة بين الأزرار */
+      flex-wrap: nowrap;
+      background: linear-gradient(135deg, #065f46 0%, #059669 100%);      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 0;
+      padding: 8px 12px; /* تقليل الحشوة العلوية والجانبية */
+      margin: 0;
+      width: 100%;
+      height: 60px; /* تثبيت الارتفاع */
+    }
+
+    .skybar .iconbtn {
+      position: relative;
+      width: 40px; /* تصغير العرض */
+      height: 40px; /* تصغير الارتفاع */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px; /* تدوير الحواف بشكل أنعم */
+      cursor: pointer;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .skybar .iconbtn i {
+      font-size: 1.35rem; /* تكبير الأيقونة الداخلية لتكون أوضح */
+    }
+
+    .skybar .iconbtn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .skybar .spacer {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0 4px; /* تقليل مسافة الفاصل */
+    }
+
+    [data-theme="dark"] .skybar {
+      background: var(--bg);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-theme="dark"] .skybar .iconbtn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .skybar .iconbtn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .badge-bubble {
+      position: absolute;
+      top: -6px;
+      inset-inline-start: -6px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: #ef4444;
+      color: #fff;
+      border: 2px solid(var(--card));
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: .72rem;
+      line-height: 1;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+    }
+
+    .searchDock {
+      margin-top: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: none;
+      box-shadow: var(--shadow);
+    }
+
+    .searchDock.open {
+      display: block;
+    }
+
+    .searchDock #searchRow {
+      display: grid;
+      grid-template-columns: 1fr 180px 40px;
+      grid-template-areas: 'search goto close';
+      gap: 12px;
+      align-items: end;
+      margin: 0;
+    }
+
+    #search {
+      grid-area: search;
+    }
+
+    #gotoNum {
+      grid-area: goto;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    .closeSearch {
+      grid-area: close;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--ink);
+      transition: all 0.2s ease;
+    }
+
+    .closeSearch:hover {
+      background: color-mix(in oklab, var(--accent) 10%, transparent);
+      border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+      transform: scale(1.05);
+    }
+
+    [data-theme="dark"] .closeSearch:hover {
+      background: color-mix(in oklab, var(--accent) 30%, transparent);
+    }
+
+    @media (max-width: 560px) {
+      .searchDock #searchRow {
+        grid-template-columns: 1fr 48px;
+        grid-template-areas:
+          'search close'
+          'goto   goto';
+      }
+
+      .closeSearch {
+        width: 48px;
+        height: 40px;
+      }
+    }
+
+    .swatch[data-ink="#000000"] {
+      background: #000000;
+      border-color: color-mix(in oklab, #000000 70%, #000)
+    }
+
+    .swatch[data-ink="#0ea5e9"] {
+      background: #0ea5e9;
+      border-color: color-mix(in oklab, #0ea5e9 70%, #000)
+    }
+
+    .swatch[data-ink="#4f46e5"] {
+      background: #4f46e5;
+      border-color: color-mix(in oklab, #4f46e5 70%, #000)
+    }
+
+    .swatch[data-ink="#e11d48"] {
+      background: #e11d48;
+      border-color: color-mix(in oklab, #e11d48 70%, #000)
+    }
+
+    .swatch[data-ink="#22c55e"] {
+      background: #22c55e;
+      border-color: color-mix(in oklab, #22c55e 70%, #000)
+    }
+
+    .swatch[data-ink="#f59e0b"] {
+      background: #f59e0b;
+      border-color: color-mix(in oklab, #f59e0b 70%, #000)
+    }
+
+    [data-theme="dark"] .swatch[data-ink="#000000"] {
+      background: #ffffff;
+      border-color: #e5e7eb
+    }
+
+    [data-theme="dark"] .swatch[data-ink="#0ea5e9"] {
+      background: #0ea5e9;
+      border-color: #7dd3fc
+    }
+
+    [data-theme="dark"] .swatch[data-ink="#4f46e5"] {
+      background: #4f46e5;
+      border-color: #a5b4fc
+    }
+
+    [data-theme="dark"] .swatch[data-ink="#e11d48"] {
+      background: #e11d48;
+      border-color: #fda4af
+    }
+
+    [data-theme="dark"] .swatch[data-ink="#22c55e"] {
+      background: #22c55e;
+      border-color: #34d399
+    }
+
+    [data-theme="dark"] .swatch[data-ink="#f59e0b"] {
+      background: #f59e0b;
+      border-color: #fcd34d
+    }
+
+    .toasts {
+      position: fixed;
+      top: auto;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      right: auto;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 10px 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: fit-content;
+      max-width: 90vw;
+      animation: toastUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      pointer-events: auto;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .toast .msg {
+      flex: 1;
+      color: var(--ink);
+      text-align: center;
+    }
+
+    .toast .close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-inline-start: 8px;
+    }
+
+    .toast .close:hover {
+      background: color-mix(in oklab, var(--accent) 10%, transparent);
+    }
+
+    /* تم إخفاء شريط التقدم للحصول على مظهر الكبسولة النظيف */
+    .toast .progress {
+      display: none;
+    }
+
+    @keyframes toastUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .confirmOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1001;
+      background: rgba(15, 23, 42, .35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px
+    }
+
+    .confirmBox {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+      max-width: 420px;
+      width: 100%;
+      padding: 16px
+    }
+
+    .confirmTitle {
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0 0 8px
+    }
+
+    .confirmMsg {
+      color: var(--muted);
+      margin: 0 0 14px
+    }
+
+    .confirmBtns {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--ink);
+      cursor: pointer
+    }
+
+    .btn.primary {
+      background: color-mix(in oklab, var(--accent) 18%, transparent);
+      border-color: color-mix(in oklab, var(--accent) 46%, transparent)
+    }
+
+    .btn.danger {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: #fff
+    }
+
+    .btn.danger:hover {
+      filter: brightness(0.95);
+      transform: translateY(-1px)
+    }
+
+    .selTools {
+      position: absolute;
+      display: none;
+      z-index: 1002;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .18);
+      padding: 6px;
+      gap: 6px;
+      align-items: center;
+      pointer-events: auto;
+    }
+
+    .selTools .miniBtn {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .selTools .miniBtn:hover {
+      transform: translateY(-1px);
+    }
+
+    .pDot {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: .95rem;
+      line-height: 1;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .18)
+    }
+
+    .pDot.p1 {
+      background: #1d4ed8
+    }
+
+    .pDot.p2 {
+      background: #dc2626
+    }
+
+    .pDot.p3 {
+      background: #f59e0b
+    }
+
+    .pDot.p4 {
+      background: #16a34a
+    }
+
+    .pDot.p5 {
+      background: #f97316
+    }
+
+    .pPlainBox {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center
+    }
+
+    .pickerBtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px; /* تثبيت الارتفاع ليطابق الأيقونات */
+      padding: 0 16px; /* ضبط الحشوة الجانبية */
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .pickerBtn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    [data-theme="dark"] .pickerBtn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .pickerBtn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .pickerBtn .pIcon {
+      font-size: 18px;
+      line-height: 1
+    }
+
+    body.modal-open {
+      overflow: hidden;
+      touch-action: none;
+      overscroll-behavior: contain
+    }
+
+    .pickerOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      background: var(--ov-bg);
+      opacity: 0;
+      transition: opacity .2s ease;
+      scrollbar-width: none;
+    }
+
+    .pickerOverlay::-webkit-scrollbar {
+      display: none
+    }
+
+    .pickerOverlay.open {
+      display: block;
+      opacity: 1
+    }
+
+    .pickerOverlayInner {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px
+    }
+
+    .picker {
+      background: var(--picker-bg);
+      border: 1px solid var(--picker-br);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+      width: min(480px, 80vw);
+      opacity: 0;
+      transform: translateY(14px) scale(.98)
+    }
+
+    .picker.open {
+      animation: fadeUp .28s cubic-bezier(.2, .7, .2, 1) forwards
+    }
+
+    @keyframes fadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(16px) scale(.98)
+      }
+
+      60% {
+        opacity: 1;
+        transform: translateY(0) scale(1.01)
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+      }
+    }
+
+    .pickerHeader {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 14px 0;
+      position: relative
+    }
+
+    .pickerTitle {
+      margin: 0;
+      font-weight: 800;
+      font-size: 1.06rem;
+      color: var(--ink);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .pickerClose {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--picker-br);
+      background: var(--picker-bg);
+      color: var(--ink);
+      border-radius: 12px;
+      cursor: pointer
+    }
+
+    .pickerList {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 14px 16px
+    }
+
+    .pRow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--picker-br);
+      border-radius: 12px;
+      background: var(--picker-bg);
+      color: var(--ink);
+      cursor: pointer;
+      transition: background .12s ease, border-color .12s ease, transform .06s ease;
+      user-select: none
+    }
+
+    .pRow:hover,
+    .pRow:focus-visible {
+      outline: 2px solid transparent;
+      background: var(--picker-row-hover)
+    }
+
+    /* تكبير بسيط لأيقونات الشريط الثابت على الأجهزة المحمولة */
+    @media (max-width: 768px) {
+      .skybar .iconbtn {
+        width: 46px !important;
+        height: 46px !important;
+      }
+
+      .skybar .iconbtn i {
+        font-size: 1.2rem !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .skybar {
+        gap: 10px;
+        padding: 8px 16px;
+      }
+
+      .skybar .iconbtn {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+      }
+
+      .pickerBtn {
+        padding: 10px 14px;
+      }
+
+      .badge-bubble {
+        transform: scale(1);
+        top: -6px;
+        inset-inline-start: -6px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .skybar {
+        gap: 8px;
+        padding: 6px 12px;
+      }
+
+      .skybar .iconbtn {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+      }
+
+      .pickerBtn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+      }
+    }
+
+
+    .tocOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20000;
+      background: var(--ov-bg);
+      display: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .tocOverlay.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+    }
+
+    .tocModal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+      width: min(420px, 85vw);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+
+    .tocOverlay.show .tocModal {
+      animation: fadeUp 0.28s cubic-bezier(.2, .7, .2, 1) forwards;
+    }
+
+    .tocHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 14px 0;
+      position: relative;
+    }
+
+    .tocTitle {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      /* استخدام خط الأميري */
+      font-family: "Amiri", serif;
+      font-weight: 700;
+      font-size: 1.4rem; /* تكبير الخط ليناسب الأميري */
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .tocClose {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--ink);
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .tocList {
+      padding: 14px;
+      overflow-y: auto;
+      max-height: calc(80vh - 100px);
+    }
+
+    .tocItem {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .tocItem:last-child {
+      border-bottom: none;
+    }
+
+    .tocItem:hover {
+      background: color-mix(in oklab, var(--accent) 10%, transparent);
+      border-radius: 8px;
+    }
+
+    .tocLabel {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      direction: rtl;
+      text-align: right;
+      /* استخدام خط الأميري */
+      font-family: "Amiri", serif;
+      font-size: 1.25rem; /* حجم مناسب للقراءة */
+      line-height: 1.6;
+    }
+
+    .tocCount {
+      margin-inline-start: 12px;
+      color: var(--accent);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    @keyframes jumpFlash {
+      0% {
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, .0)
+      }
+
+      30% {
+        box-shadow: 0 0 0 8px rgba(56, 189, 248, .25)
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, .0)
+      }
+    }
+
+    .jumpFlash {
+      animation: jumpFlash 950ms ease-out both;
+      border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+    }
+
+    .tocBlue {
+      color: #0ea5e9 !important;
+      font-size: 1.35em;
+      line-height: 1;
+    }
+    [data-theme="dark"] .tocBlue {
+      color: #22c55e !important;
+    }
+
+    .foot {
+      text-align: center;
+      color: var(--ink);
+      max-width: 1100px;
+      margin: 12px auto 22px;
+      padding: 0 16px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+
+    /* زر الرجوع في الفهرست */
+    .tocBackBtn {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--ink);
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    /* زر تحميل المزيد - الوضع الأساسي (أخضر الهوية) */
+    .loadMoreBtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 50px; /* حواف دائرية بالكامل */
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      font-size: 0.95rem;
+    }
+
+    /* الحالة النشطة - أخضر الهوية */
+    .loadMoreBtn:not(.floating):not(.completed) {
+      background: #059669; 
+      border: 1px solid #059669;
+      color: white;
+    }
+
+    .loadMoreBtn:not(.floating):not(.completed):hover {
+      background: #047857;
+      border-color: #047857;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25);
+    }
+
+    /* الحالات المكتملة - رمادي */
+    .loadMoreBtn.floating,
+    .loadMoreBtn.completed {
+      background: #9ca3af;
+      border: 1px solid #9ca3af;
+      color: white;
+    }
+
+    .loadMoreBtn.floating:hover,
+    .loadMoreBtn.completed:hover {
+      background: #6b7280;
+      border-color: #6b7280;
+      transform: translateY(-2px);
+    }
+
+    .loadMoreBtn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* الوضع الداكن - يبقى أخضر للحفاظ على الهوية */
+    [data-theme="dark"] .loadMoreBtn:not(.floating):not(.completed) {
+      background: #059669;
+      border-color: #059669;
+      color: white;
+    }
+
+    [data-theme="dark"] .loadMoreBtn:not(.floating):not(.completed):hover {
+      background: #047857;
+      border-color: #047857;
+    }
+    
+    /* الوضع الداكن للحالات المكتملة */
+    [data-theme="dark"] .loadMoreBtn.floating,
+    [data-theme="dark"] .loadMoreBtn.completed {
+      background: #4b5563;
+      border-color: #4b5563;
+      color: #e5e7eb;
+    }
+
+    /* عداد العناصر المعروضة */
+    .itemsCounter {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 8px 0;
+      display: block;
+      width: 100%;
+    }
+
+    /* ============ التعديلات الجديدة للمحاذاة في المنتصف ============ */
+    .pagesBar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* == بطاقات الأجزاء (تصميم المكتبة العمودي) == */
+    .parts-grid {
+      display: grid;
+      /* 3 أعمدة في السطر كما طلبت */
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    /* تعديل للموبايل: فرض 3 أعمدة وتصغير المسافات والخطوط لتناسب العرض */
+    @media (max-width: 500px) {
+      .parts-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px; /* تقليل الفراغ بين الكتب */
+      }
+      
+      .part-title {
+        font-size: 0.85rem; /* تصغير الخط قليلاً */
+      }
+      
+      .part-count {
+        font-size: 0.75rem;
+      }
+    }
+
+    .part-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      /* ألغينا الحشوة الداخلية لتملأ الصورة العرض */
+      padding: 0;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .part-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+      border-color: var(--accent);
+    }
+
+    /* تنسيق الصورة */
+    .part-cover {
+      width: 100%;
+      /* نسبة أبعاد الكتاب (2:3) */
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--border);
+
+      /* منع الضغط المطول/التحديد/السحب قدر الإمكان */
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    .part-info {
+      padding: 12px 8px;
+      text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+    }
+.part-title {
+      /* إضافة خط الجواب هنا */
+      font-family: "LotusBold", "AboThar", "Amiri", system-ui, sans-serif;
+      font-size: 1.2rem; /* قمت بزيادة الحجم قليلاً لأن خط اللوتس يظهر أصغر من كايرو عادة */
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.3;
+      margin: 0;
+    }
+    .part-count {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      font-family: "LotusBold", "AboThar", "Amiri", system-ui, sans-serif;
+      font-size: 0.95rem;
+      padding: 0; /* تم التصفير كما طلبت */
+      line-height: 1.6; /* يحدد ارتفاع الشريط الآن ليكون متناسباً مع حجم الخط */
+      text-align: center;
+      font-weight: 700;
+      z-index: 2;
+      backdrop-filter: blur(2px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    /* إخفاء العناصر القديمة التي لا نحتاجها */
+    .part-card::before, .part-icon-side {
+      display: none;
+    }
+
+    /* Quill Alignment Styles */
+    .ql-align-center {
+      text-align: center;
+    }
+
+    .ql-align-right {
+      text-align: right;
+    }
+
+    .ql-align-left {
+      text-align: left;
+    }
+
+    .ql-align-justify {
+      text-align: justify;
+    }
+        /* تأثير ظهور القائمة */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .anim-enter {
+      animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+    .header-theme-btn {
+      position: absolute;
+      /* التموضع في الزاوية اليسرى تماماً */
+      left: 10px;
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      transform: none; /* إزالة التوسيط العمودي السابق */
+      
+      /* تصغير الحجم */
+      width: 32px;
+      height: 32px;
+      
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      transition: all 0.2s ease;
+    }
+
+    .header-theme-btn i {
+      font-size: 0.95rem; /* تصغير الأيقونة لتناسب الزر الصغير */
+    }
+
+    .header-theme-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    /* زر حول التطبيق (الزاوية اليمنى) */
+    .header-about-btn {
+      position: absolute;
+      right: 10px; /* في اليمين */
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      transition: all 0.2s ease;
+    }
+
+    .header-about-btn i {
+      font-size: 1.1rem;
+    }
+
+    .header-about-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* تنسيق النافذة المنبثقة (Modal) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: var(--card);
+      width: 90%;
+      max-width: 500px;
+      height: 80vh;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .modal-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg);
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--ink);
+    }
+
+    /* ============ نافذة حول التطبيق (Modal) ============ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: var(--card);
+      width: 90%;
+      max-width: 500px;
+      height: 80vh;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      position: relative; /* ضروري لتموضع زر الإغلاق داخله */
+      overflow: hidden; /* لقص زوايا الـ iframe لتناسب التدوير */
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    /* زر الإغلاق العائم */
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 10;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.1);
+      border: none;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .close-modal i {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    .close-modal:hover {
+      background: #ef4444;
+      color: #fff;
+      transform: rotate(90deg);
+    }
+
+    /* جسم النافذة */
+    .modal-body {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+    }
+
+    .modal-body iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border: none;
+    }
+
+    /* الحركات */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  </style>
 </head>
-<body class="font-ui bg-gray-50 text-slate-800 dark:bg-dark-bg dark:text-slate-100 transition-colors duration-300 min-h-screen pb-20">
-<header class="fixed top-0 w-full bg-white/80 dark:bg-dark-bg/90 backdrop-blur-md z-40 border-b border-gray-100 dark:border-slate-800 transition-colors duration-300">
-<div class="container mx-auto px-4 h-16 flex items-center justify-between">
-<div class="flex items-center gap-2">
-<img src="icon.png" class="w-8 h-8 rounded-lg shadow-lg object-contain" alt="شعار التطبيق">
-<h1 class="font-headings font-bold text-xl tracking-wide">منهج النور</h1>
-</div>
-<div class="flex items-center gap-1">
-<a href="https://iqsd2020-ctrl.github.io/New/" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400 flex items-center justify-center">
-<i data-lucide="globe" class="w-5 h-5"></i>
-</a>
-<button id="tocBtn" title="الفهرست" aria-label="الفهرست" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400">
-<i data-lucide="list" class="w-5 h-5"></i>
-</button>
-<button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400">
-<i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
-<i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-</button>
-</div>
-</div>
-</header>
-<main class="container mx-auto px-4 pt-24">
-<div class="mb-8 text-center animate-slide-up">
-<p class="text-sm text-slate-500 dark:text-slate-400 font-medium mb-1">الموسوعة الفقهية للسيد الشهيد الصدر (قدس)</p>
-<h2 class="text-3xl font-bold mb-6 font-headings text-slate-800 dark:text-white">ابحث في <span class="text-gradient">المسائل الفقهية</span></h2>
-<div class="relative max-w-xl mx-auto group">
-<div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400 group-focus-within:text-primary-500 transition-colors">
-<i data-lucide="search" class="w-5 h-5"></i>
-</div>
-<input
-type="text"
-id="searchInput"
-class="block w-full p-4 pr-12 text-sm text-slate-900 bg-white dark:bg-dark-card dark:text-white rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all placeholder-slate-400"
-placeholder="ابحث عن مسألة أو رقمها (مثال: 234 أو صلاة الجمعة)..."
-autocomplete="off"
->
-<div class="absolute inset-y-0 left-0 flex items-center pl-3">
-<button id="searchButton" class="p-1.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:text-primary-600 transition-colors">
-<i data-lucide="search" class="w-4 h-4"></i>
-</button>
-</div>
-</div>
-<p id="resultsCount" class="text-xs text-slate-400 mt-2 hidden">تم العثور على <span id="countValue">0</span> نتيجة</p>
-</div>
-<div class="mb-8 animate-slide-up" style="animation-delay: 0.1s;">
-<div class="flex gap-3 overflow-x-auto no-scrollbar pb-2" id="categoriesContainer">
-<button onclick="filterCategory('الكل')" class="flex-shrink-0 px-5 py-2 rounded-full bg-slate-800 text-white text-sm font-medium shadow-md transition-transform active:scale-95 border border-transparent">
-الكل
-</button>
-</div>
-</div>
-<div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-20 animate-slide-up" style="animation-delay: 0.2s;">
-<div id="loadingState" class="col-span-full text-center py-10">
-<div class="animate-spin w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full mx-auto"></div>
-<p class="mt-4 text-slate-500">جاري قراءة قاعدة البيانات...</p>
-</div>
-</div>
-<div id="emptyState" class="hidden col-span-full text-center py-10 opacity-70">
-<div class="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-500">
-<i data-lucide="book-open" class="w-8 h-8"></i>
-</div>
-<p class="text-slate-500 dark:text-slate-400">لا توجد نتائج مطابقة</p>
-</div>
-</main>
-<nav class="fixed bottom-0 w-full bg-white dark:bg-dark-card border-t border-gray-100 dark:border-slate-800 pb-safe pt-2 px-6 shadow-[0_-5px_15px_rgba(0,0,0,0.02)] z-50">
-<div class="flex justify-between items-center max-w-md mx-auto h-14">
-<button id="homeNavBtn" class="flex flex-col items-center justify-center space-y-1 text-primary-600 dark:text-primary-400 font-bold w-16 transition-colors">
-<i data-lucide="home" class="w-6 h-6"></i>
-<span class="text-[10px]">الرئيسية</span>
-</button>
-<button id="favNavBtn" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors w-16">
-<i data-lucide="bookmark" class="w-6 h-6"></i>
-<span class="text-[10px] font-medium">المحفوظات</span>
-</button>
-<div class="relative -top-5 pointer-events-none">
-<button class="pointer-events-auto w-14 h-14 bg-gradient-to-tr from-primary-600 to-primary-400 rounded-full shadow-lg shadow-primary-500/30 flex items-center justify-center text-white transform transition-transform active:scale-90" onclick="document.getElementById('searchInput').focus()">
-<i data-lucide="search" class="w-7 h-7"></i>
-</button>
-</div>
-<button id="historyNavBtn" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors w-16">
-<i data-lucide="pen-tool" class="w-6 h-6"></i> <span class="text-[10px] font-medium">ملاحظاتي</span>
-</button>
-<button id="userBtn" class="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors w-16">
-<i data-lucide="user" class="w-6 h-6"></i>
-<span class="text-[10px] font-medium">حسابي</span>
-</button>
-</div>
-</nav>
-<div id="modalBackdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
-<div id="modalSheet" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card rounded-t-[30px] z-[56] transform translate-y-full transition-transform duration-300 h-[85vh] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col">
-<div class="bg-white dark:bg-dark-card pt-4 pb-2 px-6 rounded-t-[30px] z-10 flex-shrink-0 border-b border-gray-50 dark:border-slate-800/50">
-<div class="w-12 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
-<div class="flex justify-between items-start gap-4">
-<div class="flex-1">
-<span id="modalCategoryBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-300 mb-2">
-تصنيف
-</span>
-<h3 id="modalTitle" class="text-xl font-headings font-bold text-slate-800 dark:text-white leading-relaxed max-h-[15vh] overflow-y-auto no-scrollbar">
-العنوان
-</h3>
-</div>
-<button onclick="closeModal()" class="p-2 bg-gray-50 dark:bg-slate-700 rounded-full text-slate-500 flex-shrink-0 hover:bg-gray-100 transition-colors">
-<i data-lucide="x" class="w-5 h-5"></i>
-</button>
-</div>
-</div>
-<div class="flex-1 overflow-y-auto px-6 pb-8 pt-4">
-<div class="prose prose-slate dark:prose-invert max-w-none">
-<div class="bg-amber-50 dark:bg-amber-900/10 border-r-4 border-amber-400 p-4 rounded-lg my-4">
-<p class="text-sm text-amber-800 dark:text-amber-200 font-medium m-0" id="modalPartInfo">معلومات المصدر</p>
-</div>
-<h4 class="text-lg font-bold font-headings mt-6 mb-2 text-slate-800 dark:text-slate-200">نص الجواب</h4>
-<div class="text-slate-600 dark:text-slate-300 leading-9 text-lg text-justify font-headings select-text pb-4" id="modalDetails">
-</div>
-<div class="mt-8 flex gap-3 pb-8">
-<button onclick="shareContent(this)" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-xl font-medium shadow-lg shadow-primary-500/20 transition-all flex items-center justify-center gap-2">
-<i data-lucide="share-2" class="w-4 h-4"></i>
-مشاركة
-</button>
-<button onclick="copyContent(this)" class="flex-1 bg-gray-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-3 rounded-xl font-medium hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
-<i data-lucide="copy" class="w-4 h-4"></i>
-نسخ
-</button>
-</div>
-</div>
-<div class="h-10"></div>
-</div>
-</div>
-<div id="favoritesBackdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[51] hidden opacity-0 transition-opacity duration-300" onclick="closeFavoritesModal()"></div>
-<div id="favoritesSheet" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card rounded-t-[30px] z-[52] transform translate-y-full transition-transform duration-300 h-[85vh] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col">
-<div class="sticky top-0 bg-white dark:bg-dark-card pt-6 pb-4 px-6 rounded-t-[30px] z-10 border-b border-gray-100 dark:border-slate-800">
-<div class="flex justify-between items-center">
-<div class="flex items-center gap-3">
-<div class="p-2 bg-red-100 dark:bg-red-900/20 text-red-500 rounded-full">
-<i data-lucide="heart" class="w-5 h-5 fill-current"></i>
-</div>
-<h3 class="text-xl font-headings font-bold text-slate-800 dark:text-white">المسائل المحفوظة</h3>
-</div>
-<button onclick="closeFavoritesModal()" class="p-2 bg-gray-50 dark:bg-slate-700 rounded-full text-slate-500 flex-shrink-0 hover:bg-gray-100 transition-colors">
-<i data-lucide="x" class="w-5 h-5"></i>
-</button>
-</div>
-</div>
-<div id="favoritesListContainer" class="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-<div class="flex flex-col items-center justify-center h-full text-slate-400 opacity-70">
-<i data-lucide="loader-2" class="w-8 h-8 animate-spin mb-2"></i>
-<p class="text-sm">جاري التحميل...</p>
-</div>
-</div>
-</div>
-<div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-<div class="bg-white dark:bg-dark-card w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="authContent">
-<div class="p-6 text-center border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
-<h3 id="authTitle" class="text-xl font-headings font-bold text-slate-800 dark:text-white mb-1">تسجيل الدخول</h3>
-<p class="text-xs text-slate-500">سجّل لتحفظ مفضلتك وتزامن بياناتك</p>
-</div>
-<div class="p-6">
-<button id="googleBtn" class="w-full py-2.5 px-4 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-slate-700 dark:text-white font-medium shadow-sm hover:bg-gray-50 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-3 mb-6 relative group">
-<img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
-<span>المتابعة باستخدام Google</span>
-<div class="absolute inset-0 bg-white/80 dark:bg-slate-700/80 items-center justify-center hidden" id="googleLoader">
-<div class="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
-</div>
-</button>
-<div class="relative flex py-2 items-center mb-6">
-<div class="flex-grow border-t border-gray-200 dark:border-slate-700"></div>
-<span class="flex-shrink-0 mx-4 text-slate-400 text-xs">أو عبر البريد الإلكتروني</span>
-<div class="flex-grow border-t border-gray-200 dark:border-slate-700"></div>
-</div>
-<form id="emailForm" class="space-y-4">
-<div id="nameFieldContainer" class="hidden">
-<label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">الاسم</label>
-<input type="text" id="nameInput" class="w-full px-4 py-2 rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none dark:text-white" placeholder="اسمك الظاهر">
-</div>
-<div>
-<label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">البريد الإلكتروني</label>
-<input type="email" id="emailInput" required class="w-full px-4 py-2 rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none dark:text-white" placeholder="name@example.com">
-</div>
-<div>
-<label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">كلمة المرور</label>
-<input type="password" id="passwordInput" required class="w-full px-4 py-2 rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none dark:text-white" placeholder="******">
-</div>
-<p id="authErrorMsg" class="text-red-500 text-xs text-center hidden"></p>
-<button type="submit" id="submitAuthBtn" class="w-full py-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold shadow-lg shadow-primary-500/30 transition-all active:scale-95 flex justify-center items-center gap-2">
-<span id="btnText">دخول</span>
-<div id="btnLoader" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin hidden"></div>
-</button>
-</form>
-<div class="mt-4 text-center">
-<button id="toggleAuthMode" class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium hover:underline">
-ليس لديك حساب؟ إنشاء حساب جديد
-</button>
-</div>
-</div>
-<button onclick="toggleAuthModal(false)" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-<i data-lucide="x" class="w-5 h-5"></i>
-</button>
-</div>
-</div>
-<div id="profileModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden flex items-end sm:items-center justify-center opacity-0 transition-opacity duration-300">
-<div class="bg-white dark:bg-dark-card w-full sm:max-w-md sm:rounded-2xl rounded-t-[30px] shadow-2xl overflow-hidden transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-300" id="profileContent">
-<div class="relative bg-gradient-to-br from-primary-600 to-primary-800 p-6 pt-10 text-center">
-<button onclick="toggleProfileModal(false)" class="absolute top-4 left-4 text-white/70 hover:text-white">
-<i data-lucide="x" class="w-6 h-6"></i>
-</button>
-<div class="relative mx-auto w-24 h-24 mb-3 group cursor-pointer" onclick="document.getElementById('profileUpload').click()">
-<img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" class="w-full h-full rounded-full object-cover border-4 border-white/20 shadow-xl group-hover:opacity-90 transition-opacity">
-<div class="absolute bottom-0 right-0 bg-white dark:bg-slate-800 p-1.5 rounded-full shadow-md text-primary-600">
-<i data-lucide="camera" class="w-4 h-4"></i>
-</div>
-<input type="file" id="profileUpload" accept="image/*" class="hidden">
-</div>
-<h3 id="userNameDisplay" class="text-xl font-headings font-bold text-white mb-1">جاري التحميل...</h3>
-<p id="userEmailDisplay" class="text-sm text-primary-100 font-light">...</p>
-</div>
-<div class="p-6">
-<div class="grid grid-cols-2 gap-4 mb-6">
-<div class="bg-gray-50 dark:bg-slate-800 p-4 rounded-xl text-center">
-<span class="block text-2xl font-bold text-primary-600 dark:text-primary-400" id="favCount">0</span>
-<span class="text-xs text-slate-500">مسألة مفضلة</span>
-</div>
-<div class="bg-gray-50 dark:bg-slate-800 p-4 rounded-xl text-center">
-<span class="block text-2xl font-bold text-accent-gold" id="daysSinceJoin">1</span>
-<span class="text-xs text-slate-500">يوم معنا</span>
-</div>
-</div>
-<button onclick="logoutUser()" class="w-full py-3 rounded-xl border border-red-200 dark:border-red-900/30 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 font-medium transition-colors flex items-center justify-center gap-2">
-<i data-lucide="log-out" class="w-4 h-4"></i>
-تسجيل الخروج
-</button>
-</div>
-</div>
-</div>
-<div id="historyBackdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[51] hidden opacity-0 transition-opacity duration-300" onclick="closeHistoryModal()"></div>
-<div id="historySheet" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card rounded-t-[30px] z-[52] transform translate-y-full transition-transform duration-300 h-[85vh] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col">
-<div class="sticky top-0 bg-white dark:bg-dark-card pt-6 pb-4 px-6 rounded-t-[30px] z-10 border-b border-gray-100 dark:border-slate-800 flex justify-between items-center">
-<div class="flex items-center gap-3">
-<div class="p-2 bg-blue-100 dark:bg-blue-900/20 text-blue-500 rounded-full">
-<i data-lucide="edit-3" class="w-5 h-5"></i>
-</div>
-<h3 class="text-xl font-headings font-bold text-slate-800 dark:text-white">ملاحظاتي</h3>
-</div>
-<button onclick="closeHistoryModal()" class="p-2 bg-gray-50 dark:bg-slate-700 rounded-full text-slate-500 hover:bg-gray-100 transition-colors">
-<i data-lucide="x" class="w-5 h-5"></i>
-</button>
-</div>
-<div id="notesListContainer" class="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50/50 dark:bg-dark-bg/20">
-</div>
-<div class="p-4 bg-white dark:bg-dark-card border-t border-gray-100 dark:border-slate-800 pb-safe">
-<div class="flex gap-2">
-<textarea id="noteInput" rows="1" class="flex-1 bg-gray-100 dark:bg-slate-800 text-slate-800 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" placeholder="اكتب ملاحظة جديدة..."></textarea>
-<button onclick="addNote()" class="bg-primary-600 hover:bg-primary-700 text-white p-3 rounded-xl transition-colors shadow-lg shadow-primary-500/20 flex items-center justify-center">
-<i data-lucide="send" class="w-5 h-5 rtl:rotate-180"></i>
-</button>
-</div>
-</div>
-</div>
 
-<!-- نافذة الفهرست -->
-<div id="tocBackdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[57] hidden opacity-0 transition-opacity duration-300" onclick="closeTocModal()"></div>
-<div id="tocSheet" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card rounded-t-[30px] z-[58] transform translate-y-full transition-transform duration-300 h-[85vh] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col">
-  <div class="sticky top-0 bg-white dark:bg-dark-card pt-6 pb-4 px-6 rounded-t-[30px] z-10 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between gap-3">
-    <button id="tocBackBtn" class="p-2 bg-gray-50 dark:bg-slate-700 rounded-full text-slate-500 hover:bg-gray-100 transition-colors hidden" aria-label="رجوع">
-      <i data-lucide="arrow-right" class="w-5 h-5"></i>
-    </button>
-    <div class="flex items-center gap-3 flex-1">
-      <div class="p-2 bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-300 rounded-full">
-        <i data-lucide="list" class="w-5 h-5"></i>
+<body>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <!-- حوار التأكيد -->
+  <div id="confirmOverlay" class="confirmOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="confirmBox">
+      <h4 id="confirmTitle" class="confirmTitle">تفريغ المحفوظات</h4>
+      <p id="confirmMsg" class="confirmMsg">هل أنت متأكد؟</p>
+      <div class="confirmBtns">
+        <button id="confirmYes" class="btn danger"><i class="material-symbols-outlined">delete</i> نعم، حذف الكل</button>
+        <button id="confirmNo" class="btn"><i class="material-symbols-outlined">close</i> إلغاء</button>
       </div>
-      <h3 id="tocTitle" class="text-xl font-headings font-bold text-slate-800 dark:text-white">الفهرست</h3>
     </div>
-    <button onclick="closeTocModal()" class="p-2 bg-gray-50 dark:bg-slate-700 rounded-full text-slate-500 hover:bg-gray-100 transition-colors" aria-label="إغلاق">
-      <i data-lucide="x" class="w-5 h-5"></i>
-    </button>
   </div>
-  <div id="tocList" class="flex-1 overflow-y-auto px-4 py-4 space-y-2 bg-gray-50/50 dark:bg-dark-bg/20"></div>
-</div>
 
-<div id="toastContainer" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col gap-2 w-full max-w-xs pointer-events-none transition-all duration-300"></div>
+  <header>
+    <button id="headerThemeBtn" class="header-theme-btn" aria-label="تبديل المظهر">
+      <i class="material-symbols-outlined">dark_mode</i>
+    </button>
+ <button id="headerAboutBtn" class="header-about-btn" aria-label="حول التطبيق">
+      <i class="material-symbols-outlined">info</i>
+    </button>
+    <div class="wrap">
+      <div class="titleBlock">
+        <h1>منهج النور</h1>
+        <p class="sub">طبقاً لفتاوى آية الله العظمى الشهيد السيد محمد الصدر</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- الشريط السماوي -->
+  <div class="skybar" id="skybar" style="display:none;">
+    <div id="partHolder"></div>
+
+    <!-- زر فتح قائمة الكتب. تم استخدامه للعودة إلى شبكة بطاقات الكتب بدلاً من فتح قائمة منبثقة -->
+    <button id="openPicker" class="pickerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="partsPicker"
+      title="الكتب" aria-label="الكتب">
+      <span class="pIcon"><i class="material-symbols-outlined">grid_view</i></span>
+      <span>الرئيسية</span>
+    </button>
+
+    <button class="iconbtn" id="tocBtn" title="الفهرست" aria-label="الفهرست">
+      <i class="material-symbols-outlined">toc</i>
+    </button>
+
+    <div class="spacer"></div>
+    <button class="iconbtn" id="searchBtn" title="بحث" aria-label="بحث"><i class="material-symbols-outlined">search</i></button>
+
+    <button class="iconbtn" id="savedToggle" title="المحفوظات" aria-label="المحفوظات">
+      <i class="material-symbols-outlined">bookmark</i>
+      <span id="savedCount" class="badge-bubble">0</span>
+    </button>
+
+    <button class="iconbtn" id="toolsToggle" title="لوحة الرسم" aria-label="لوحة الرسم"><i class="material-symbols-outlined">palette</i></button>
+    <button class="iconbtn" id="theme" title="تبديل المظهر" aria-label="تبديل المظهر"><i class="material-symbols-outlined">dark_mode</i></button>
+  </div>
+
+  <main>
+    <!-- قسم بطاقات اختيار الأجزاء عند الدخول للصفحة -->
+    <section id="partsViewMasail">
+      <div style="padding: 10px 0;">     
+        <div class="parts-grid" id="masailPartsGrid">
+          </div>
+      </div>
+    </section>
+
+
+    <!-- سيتم إظهار شريط البحث فقط بعد اختيار جزء أو جميع الكتب -->
+    <div class="searchDock" id="searchDock" style="display:none;"></div>
+
+    <section id="listView" style="display:none; position: relative;">
+      <div class="sectionHead">
+        <h3 id="listTitle" class="centerTitle">
+          <span class="titleIconOne"><img src="covers/all.png" class="listTitleCover" alt="جميع الكتب" loading="lazy"></span>
+          مسائل جميع الكتب (0) مسألة
+        </h3>
+      </div>
+
+      <div class="filtersBar" id="filtersBar">
+        <div class="grid">
+          <!-- حُذفت القائمة الكلاسيكية نهائيًا -->
+
+          <!-- يُنقل إلى searchDock ويظهر كسطر واحد على الكبير، وسطرين على الصغير -->
+          <div id="searchRow">
+            <input id="search" type="search" placeholder="ابحث في المسائل والأجوبة…" aria-label="البحث" />
+            <input id="gotoNum" type="text" inputmode="numeric" pattern="[0-9٠-٩]*" maxlength="4"
+              placeholder="اذهب إلى مسألة (رقم)" aria-label="اذهب إلى مسألة" />
+            <!-- زر الإغلاق يُضاف هنا برمجيًا -->
+          </div>
+        </div>
+      </div>
+
+      <div id="list"></div>
+
+      <!-- نظام التحميل الجديد - تم نقل العداد فوق الزر -->
+      <div class="pagesBar" id="pagesBar">
+        <!-- العداد يظهر دائماً -->
+        <div class="itemsCounter" id="itemsCounter">عرض <span id="currentItems">0</span> من <span
+            id="totalItems">0</span> مسألة</div>
+
+        <!-- الزر يظهر دائماً مع حالات مختلفة -->
+        <button id="loadMore" class="loadMoreBtn">
+          <i class="material-symbols-outlined">arrow_downward</i>
+          تحميل 25 مسألة أخرى
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <button id="toTop" title="عودة للأعلى" aria-label="عودة للأعلى..."><i class="material-symbols-outlined">arrow_upward</i></button>
+  <div class="toolsOverlay" id="toolsOverlay"></div>
+  <div class="bottomBar" id="bottomBar" role="toolbar" aria-label="أدوات العرض">
+    <button class="bbtn" id="zoomOut" title="تصغير"><i class="material-symbols-outlined">zoom_out</i></button>
+    <button class="bbtn" id="zoomReset" title="إعادة الحجم"><i class="material-symbols-outlined">aspect_ratio</i></button>
+    <button class="bbtn" id="zoomIn" title="تكبير"><i class="material-symbols-outlined">zoom_in</i></button>
+
+    <div class="palette" aria-label="لون الخط (للأسئلة/الأجوبة/الهوامش فقط)">
+      <!-- (تم حذف الأصفر #facc15 للإبقاء على 6 ألوان فقط) -->
+      <button class="swatch" data-ink="#000000" title="أسود/أبيض"></button>
+      <button class="swatch" data-ink="#0ea5e9" title="سماوي"></button>
+      <button class="swatch" data-ink="#4f46e5" title="نيلي"></button>
+      <button class="swatch" data-ink="#e11d48" title="قرمزي"></button>
+      <button class="swatch" data-ink="#22c55e" title="أخضر"></button>
+      <button class="swatch" data-ink="#f59e0b" title="عنبر"></button>
+    </div>
+
+    <button class="bbtn" id="resetAll" title="إرجاع الافتراضي"><i class="material-symbols-outlined">restart_alt</i></button>
+  </div>
+
+  <!-- شريط أدوات التحديد العائم -->
+  <div id="selTools" class="selTools" role="toolbar" aria-label="أدوات التحديد">
+    <button id="copySel" class="miniBtn" title="نسخ" aria-label="نسخ"><i class="material-symbols-outlined">content_copy</i></button>
+    <button id="searchSel" class="miniBtn" title="بحث" aria-label="بحث"><i class="material-symbols-outlined">search</i></button>
+  </div>
+
+  <!-- نافذة منتقي الأجزاء (تم إخفاؤها لعدم الحاجة بعد استخدام بطاقات الأجزاء) -->
+  <div id="pickerOverlay" class="pickerOverlay" role="dialog" aria-modal="true" style="display:none;">
+    <div class="pickerOverlayInner">
+      <div id="partsPicker" class="picker" role="document" tabindex="-1" aria-labelledby="pickerTitle">
+        <div class="pickerHeader">
+          <h4 id="pickerTitle" class="pickerTitle">اختر جزء</h4>
+          <button id="closePicker" class="pickerClose" aria-label="إغلاق"><i class="material-symbols-outlined">close</i></button>
+        </div>
+        <div id="pickerList" class="pickerList" role="listbox" aria-label="قائمة الكتب">
+          <button class="pRow" role="option" data-val="" aria-selected="true">
+            <span class="pPlainBox"><span class="plain" aria-hidden="true">📚</span></span>
+            <span class="pLabel">جميع الكتب (0) مسألة</span>
+          </button>
+          <!-- تُظهر جميع الكتب نفس أيقونة الكتاب بدلاً من النقاط الملونة المتسلسلة -->
+          <button class="pRow" role="option" data-val="1"><span class="pPlainBox"><span class="plain"
+                aria-hidden="true">📚</span></span><span class="pLabel">الجزء الأول (0) مسألة</span></button>
+          <button class="pRow" role="option" data-val="2"><span class="pPlainBox"><span class="plain"
+                aria-hidden="true">📚</span></span><span class="pLabel">الجزء الثاني (0) مسألة</span></button>
+          <button class="pRow" role="option" data-val="3"><span class="pPlainBox"><span class="plain"
+                aria-hidden="true">📚</span></span><span class="pLabel">الجزء الثالث (0) مسألة</span></button>
+          <button class="pRow" role="option" data-val="4"><span class="pPlainBox"><span class="plain"
+                aria-hidden="true">📚</span></span><span class="pLabel">الجزء الرابع (0) مسألة</span></button>
+          <button class="pRow" role="option" data-val="5"><span class="pPlainBox"><span class="plain"
+                aria-hidden="true">📚</span></span><span class="pLabel">الجزء الخامس (0) مسألة</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة الفهرست المنبثقة -->
+  <div id="tocOverlay" class="tocOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="tocModal">
+      <div class="tocHeader">
+        <!-- زر الرجوع (يظهر فقط في وضع العناوين عندما ندخل من قائمة الأجزاء) -->
+        <button id="tocBackBtn" class="tocBackBtn" style="display:none;" aria-label="رجوع"><i
+            class="material-symbols-outlined">arrow_forward</i></button>
+
+        <h4 id="tocModalTitle" class="tocTitle">فهرست جميع الكتب</h4>
+
+        <button id="tocClose" class="tocClose" aria-label="إغلاق"><i class="material-symbols-outlined">close</i></button>
+      </div>
+      <div id="tocList" class="tocList"></div>
+    </div>
+  </div>
+
+  <script>
+    const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
+    const DEFAULTS = { theme: 'light', ink: '#0b355d', zoom: 1, pageSize: 20, filterPart: '', search: '' };
+
+    // المتغير الجديد ليحل محل القائمة الكلاسيكية
+    let CUR_PART = '';
+
+    // متغيرات جديدة للتحكم في حالة الفهرست
+    let TOC_MODE = 'parts'; // 'parts' أو 'headers'
+    let TOC_CURRENT_PART = null;
+    let TOC_FROM_PARTS_LIST = false; // جديد: لتحديد إذا كنا دخلنا من قائمة الأجزاء
+
+    // متغيرات جديدة لنظام التحميل
+    let CURRENT_ITEMS = 0;
+    let TOTAL_ITEMS = 0;
+    let LOAD_MORE_COUNT = 25; // تم التغيير من 20 إلى 25
+
+    // ===== تحديث هيكل البيانات لدعم نظام الملفات المنفصلة =====
+    let DATA = []; // سيتم تحميل جميع البيانات من الملفات المنفصلة
+    let HEADERS = [];
+    let TEXTS = [];  // مصفوفة النصوص
+    // قائمة الكتب (الأجزاء) تُحمّل من ملف Namebooks.json
+    let BOOKS_LIST = [];
+
+    // ===== الدوال المساعدة للتظليل المرن =====
+    // حزمة محارف التشكيل/التطويل (اختيارية بين كل حرف وآخر)
+    const _AR_DIAC_OPT = '[\\u064B-\\u0652\\u0670\\u0640]*'; // تنوين/حركات/ألف خنجرية/تطويل
+
+    function _escapeRe(s) {
+      return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // يحوّل حرفاً عربياً إلى "فئة" مرنة تطابق أشكاله الشائعة
+    function _charFlex(ch) {
+      switch (ch) {
+        case 'ا': case 'أ': case 'إ': case 'آ': case 'ٱ':
+          return '[اأإآٱ]';
+        case 'ة': case 'ه':
+          return '[هة]';
+        case 'ى': case 'ي': case 'ئ':
+          return '[ىيئ]'; // نسمح أيضاً بـ "ئ" لأن التوحيد قد يردّه إلى ياء
+        case 'ؤ': case 'و':
+          return '[وؤ]';
+        // أرقام عربية/هندية (اختياري)
+        case '0': return '[0٠]';
+        case '1': return '[1١]';
+        case '2': return '[2٢]';
+        case '3': return '[3٣]';
+        case '4': return '[4٤]';
+        case '5': return '[5٥]';
+        case '6': return '[6٦]';
+        case '7': return '[7٧]';
+        case '8': return '[8٨]';
+        case '9': return '[9٩]';
+        default:
+          // أحرف لاتينية أو عربية أخرى: نهربها كما هي
+          return _escapeRe(ch);
+      }
+    }
+
+    // يبني نمطاً مرناً لكلمة واحدة مع السماح بتشكيل/تطويل بين الحروف
+    function _flexPatternForTerm(term) {
+      const chars = term.split('');
+      // نربط بين كل حرفين بحزمة التشكيل الاختيارية
+      return chars.map(_charFlex).join(_AR_DIAC_OPT);
+    }
+
+    function isBlack(c) { return String(c || '').trim().toLowerCase() === '#000000'; }
+    function effectiveInk(c) {
+      const dark = (document.documentElement.getAttribute('data-theme') || 'light') === 'dark';
+      if (dark && isBlack(c)) return '#ffffff';
+      if (dark && (!c || c === '' || c === '#0b355d')) return '#e6edf3';
+      if (!dark && (!c || c === '')) return '#0b355d';
+      return c;
+    }
+    function reapplyInkForTheme() {
+      const chosen = (typeof SETTINGS !== 'undefined' && SETTINGS.ink) ? SETTINGS.ink : '';
+      const eff = effectiveInk(chosen);
+      document.documentElement.style.setProperty('--qa-ink', eff);
+      const sw = document.querySelector('.swatch[data-ink="#000000"]');
+      if (sw) {
+        const dark = (document.documentElement.getAttribute('data-theme') || 'light') === 'dark';
+        sw.title = dark ? 'أبيض' : 'أسود';
+      }
+    }
+
+    function loadSettings() {
+      try {
+        const s = localStorage.getItem('masael-settings');
+        if (!s) return { ...DEFAULTS };
+        const p = JSON.parse(s);
+        return {
+          theme: p.theme === 'dark' ? 'dark' : 'light',
+          ink: p.ink || DEFAULTS.ink,
+          zoom: Math.min(1.8, Math.max(0.8, parseFloat(p.zoom) || DEFAULTS.zoom)),
+          pageSize: parseInt(p.pageSize) || DEFAULTS.pageSize,
+          filterPart: p.filterPart || DEFAULTS.filterPart,
+          search: p.search || DEFAULTS.search
+        };
+      } catch { return { ...DEFAULTS }; }
+    }
+    function saveSettings(o) { try { localStorage.setItem('masael-settings', JSON.stringify(o)); } catch { } }
+    let SETTINGS = loadSettings();
+
+    /* —— إدارة المحفوظات —— */
+    let SAVED = loadSaved();
+    function loadSaved() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('masael-saved') || '[]');
+        return new Set(Array.isArray(raw) ? raw : []);
+      } catch { return new Set(); }
+    }
+    function persistSaved() { try { localStorage.setItem('masael-saved', JSON.stringify([...SAVED])); } catch { } }
+    function updateSavedBadge() {
+      const n = SAVED.size;
+      const b = $('#savedCount');
+      if (!b) return;
+      b.textContent = n;
+      b.style.display = n ? 'inline-flex' : 'none';
+    }
+    function itemId(item) {
+      const part = item.part ?? 0;
+      const order = item.order ?? 0;
+      const id = item.id ?? `p${part}-o${order}`;
+      return String(id);
+    }
+
+    let PAGE = 1; let PAGE_SIZE = SETTINGS.pageSize;
+    let SAVED_MODE = false;
+
+    /* === وضع العنوان (فلترة حسب headerId) === */
+    let HEADER_MODE = false;
+    let HEADER_ID = null;
+
+    /* === وضع اذهب إلى مسألة === */
+    let GO_MODE = false;
+    let GO_ORDER = null;
+    let GO_TIMER = null;
+
+    // إرجاع اسم الجزء بالعربية بالاعتماد على BOOKS_LIST إذا توافر
+    function partWord(n) {
+      // إذا كان لدينا قائمة كتب، نستخرج الاسم منها
+      if (Array.isArray(BOOKS_LIST) && BOOKS_LIST.length > 0) {
+        const idStr = String(n);
+        const book = BOOKS_LIST.find(b => String(b.id) === idStr);
+        if (book && book.name) { return book.name; }
+      }
+      const v = Number(n);
+      switch (v) {
+        case 1: return "الأول";
+        case 2: return "الثاني";
+        case 3: return "الثالث";
+        case 4: return "الرابع";
+        case 5: return "الخامس";
+        case 6: return "السادس";
+        case 7: return "السابع";
+        case 8: return "الثامن";
+        case 9: return "التاسع";
+        case 10: return "العاشر";
+        default:
+          // للأرقام الكبيرة: ارجع الرقم نفسه دون بادئة "الجزء"
+          return String(v);
+      }
+    }
+
+    /**
+     * إرجاع اسم كامل للجزء مع البادئة "الجزء" عند الحاجة، لمنع التكرار.
+     * إذا كان partWord() يعيد بالفعل اسماً يبدأ ب "الجزء"، فيُعاد كما هو.
+     * بخلاف ذلك تُضاف البادئة "الجزء " قبل الاسم.
+     * @param {string|number} n
+     * @returns {string}
+     */
+    function partFullLabel(n) {
+      // أعد الاسم كما هو دون إضافة بادئة "الجزء"
+      return (partWord(n) || '').trim();
+    }
+    function toArabicDigits(num) { return String(num ?? '').replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); }
+    const escapeHtml = s => (s || "").replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+    const stripHtml = s => (s || "").replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+
+    // تم إزالة التعريفات التالية لأننا لن نستخدمها بعد الآن:
+    // const RE_Q=/^\s*(?:س|سؤال|السؤال)\s*[)\]:：\-–\.ـ]*\s*/; 
+    // const RE_A=/^\s*(?:ج|جواب|الإجابة|الجواب)\s*[)\]:：\-–\.ـ]*\s*/;
+    // const RE_Q_LAT=/^\s*(?:Q|Question)\s*[:\-–\.]*\s*/i; 
+    // const RE_A_LAT=/^\s*(?:A|Answer)\s*[:\-–\.]*\s*/i;
+
+    function partLabelForCard(n) {
+      const isXS = window.matchMedia('(max-width:360px)').matches;
+      return isXS ? String(Number(n) || '') : partWord(n);
+    }
+
+    function setTheme(mode) {
+      const theme = mode === 'dark' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.body.setAttribute('data-theme', theme);
+      SETTINGS.theme = theme; saveSettings(SETTINGS);
+
+      const iconHtml = theme === 'dark' ? '<i class="material-symbols-outlined">light_mode</i>' : '<i class="material-symbols-outlined">dark_mode</i>';
+      const label = theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن';
+
+      // تحديث زر شريط الأدوات
+      const btn = $('#theme');
+      if (btn) {
+        btn.innerHTML = iconHtml;
+        btn.setAttribute('title', label);
+        btn.setAttribute('aria-label', label);
+      }
+
+      // تحديث زر الهيدر الجديد
+      const headBtn = $('#headerThemeBtn');
+      if (headBtn) {
+        headBtn.innerHTML = iconHtml;
+        headBtn.setAttribute('title', label);
+        headBtn.setAttribute('aria-label', label);
+      }
+
+      reapplyInkForTheme();
+    }
+    function applyInk(c) {
+      const eff = effectiveInk(c);
+      document.documentElement.style.setProperty('--qa-ink', eff);
+      document.documentElement.style.setProperty('--foot-ink', eff);
+      SETTINGS.ink = c; saveSettings(SETTINGS);
+    }
+    function applyZoom(z) {
+      const v = Math.min(1.8, Math.max(0.8, z));
+      document.documentElement.style.setProperty('--zoom', v);
+      SETTINGS.zoom = v; saveSettings(SETTINGS);
+    }
+    function toast(text, timeout = 2200) {
+      const wrap = document.getElementById('toasts');
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.innerHTML = `<div class="msg">${text}</div><button class="close" aria-label="إغلاق"><i class="material-symbols-outlined">close</i></button><div class="progress" style="animation-duration:${timeout}ms"></div>`;
+      wrap.appendChild(el);
+      const close = () => { el.style.opacity = '0'; el.style.transform = 'translateY(-6px)'; setTimeout(() => el.remove(), 160); };
+      el.querySelector('.close').onclick = close; setTimeout(close, timeout);
+    }
+
+    // ===== تحديث دوال التحميل لدعم نظام الملفات المنفصلة =====
+    async function fetchJson(path) {
+      try {
+        const ver = localStorage.getItem('masael-data-ver') || String(new Date().getFullYear());
+        const res = await fetch(`${path}?v=${encodeURIComponent(ver)}`);
+        if (!res.ok) return [];
+        return await res.json();
+      } catch (e) { console.error(e); return []; }
+    }
+
+    /*
+     * تحميل كل الأجزاء ديناميكياً من مجلد Books.
+     * تعتمد الدالة على ملف headers.json لاكتشاف عدد الأجزاء المتاحة بدلاً من الاعتماد على أسماء ثابتة.
+     */
+    async function loadAllQuestions() {
+      try {
+        // حمّل قائمة الكتب من Namebooks.json إن وجدت
+        let books = [];
+        try {
+          const res = await fetchJson('Namebooks.json');
+          if (Array.isArray(res) && res.length > 0) {
+            books = res;
+            BOOKS_LIST = res;
+          }
+        } catch (e) { /* إذا لم يوجد الملف، نتجاهل */ }
+
+        // قراءة رؤوس الأسئلة للحصول على أرقام الأجزاء عند غياب Namebooks
+        const hData = await loadHeaders();
+        // إذا كان لدينا Namebooks نستخدم المعرفات منه، وإلا نستخلص من HEADERS
+        let partNumbers;
+        if (Array.isArray(books) && books.length > 0) {
+          // تصفية الكتب المرئية فقط (visible = true أو غير محدد)
+          const visibleBooks = books.filter(b => b.visible !== false);
+          // استخدم ترتيب الكتب كما هو دون فرز لتطابق الترتيب الموجود في Namebooks.json
+          partNumbers = visibleBooks.map(b => Number(b.id)).filter(n => !isNaN(n));
+          // تحديث BOOKS_LIST ليشمل الكتب المرئية فقط
+          BOOKS_LIST = visibleBooks;
+        } else {
+          partNumbers = Array.from(new Set(
+            Array.isArray(hData) ? hData.map(h => Number(h.part)).filter(n => !isNaN(n)) : []
+          )).sort((a, b) => a - b);
+          // توليد BOOKS_LIST اعتماداً على HEADERS
+          BOOKS_LIST = partNumbers.map(p => ({ id: String(p), name: partWord(p) }));
+        }
+        const allData = [];
+        await Promise.all(partNumbers.map(async (p) => {
+          const items = await fetchJson(`Books/part${p}.json`);
+          if (Array.isArray(items)) {
+            items.forEach(item => allData.push({ ...item, part: p }));
+          }
+        }));
+        return allData;
+      } catch (e) { console.error(e); return []; }
+    }
+
+    async function loadHeaders() { const d = await fetchJson('headers.json'); return Array.isArray(d) ? d : []; }
+    async function loadTexts() { const d = await fetchJson('texts.json'); return Array.isArray(d) ? d : []; }
+
+    function getCurrentPart() {
+      const v = CUR_PART === '' ? '' : String(CUR_PART);
+      return v;
+    }
+
+    function setListTitle(count) {
+      const suffix = ' مسألة';
+      const partVal = getCurrentPart();
+      let html = '';
+      if (GO_MODE && GO_ORDER != null) {
+        // في وضع "اذهب إلى"، نستخدم اسم كامل للجزء لمنع تكرار كلمة "الجزء"
+        const scopeTxt = partVal ? partFullLabel(partVal) : 'جميع الكتب';
+        html = `<span class="titleIconOne">🔎</span>مسائل رقم ${GO_ORDER} من ${scopeTxt} (${count})${suffix}`;
+      } else if (HEADER_MODE) {
+        html = `<span class="titleIconOne"><i class="material-symbols-outlined tocBlue">toc</i></span>عدد مسائل العنوان (${count})${suffix}`;
+      } else if (SAVED_MODE) {
+        html = `<span class="titleIconOne"><i class="material-symbols-outlined" style="color:#e11d48; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">bookmark</i></span>المسائل المحفوظة (${count})`;
+      } else {
+        // صورة غلاف الكتاب بدل أيقونة 📚
+        const label = partVal ? partFullLabel(partVal) : 'جميع الكتب';
+        const imgPath = partVal ? `covers/${partVal}.png` : 'covers/all.png';
+        const iconHTML = `<img src="${imgPath}" class="listTitleCover" alt="${label}" loading="lazy" onerror="this.src='covers/all.png'">`;
+        html = `<span class="titleIconOne">${iconHTML}</span>${label}`;
+      }
+      $('#listTitle').innerHTML = html;
+    }
+
+    function updateTocCardTitle() {
+      // تم إلغاء هذه الدالة لأن زر الفهرست أصبح أيقونة في الشريط العلوي ولا يحتاج لتحديث نص
+    }
+
+    function normalizeArabic(s) {
+      return (s || '')
+        .replace(/[\u0640\u0650\u064E\u064F\u064B\u064D\u064C\u0651\u0652]/g, '') // إزالة التشكيل
+        .replace(/[إأآ]/g, 'ا') // توحيد الألف
+        .replace(/[ة]/g, 'ه') // توحيد التاء المربوطة
+        .replace(/[ى]/g, 'ي') // توحيد الياء
+        .replace(/[ؤ]/g, 'و') // توحيد الواو
+        .replace(/[ئ]/g, 'ي') // توحيد الياء مع الهمزة
+        .replace(/[ـ]/g, '') // إزالة التطويل
+        .replace(/[\u200E\u200F\u202A-\u202E]/g, ''); // إزالة علامات الاتجاه
+    }
+
+    function buildTerms(query) {
+      const q = normalizeArabic((query || '').trim().toLowerCase());
+      if (!q) return [];
+      return q.split(/\s+/).filter(t => t.length > 0); // إزالة الشرط t.length>1 للسماح بالكلمات القصيرة
+    }
+
+    // ===== دالة highlightHTML المحدثة مع التظليل المرن =====
+    function highlightHTML(escapedHtml, query) {
+      const terms = buildTerms(query);
+      if (!terms.length) return escapedHtml;
+
+      // نبني نمطاً يجمع كل الكلمات بنمط مرن، ونتأكد من راية 'u' لدعم يونيكود
+      const pattern = '(' + terms.map(_flexPatternForTerm).join('|') + ')';
+      const re = new RegExp(pattern, 'giu');
+
+      // ملاحظة: نُطبِّق التظليل على النص "كما هو" (غير مُطبَّع)
+      // لأن الأنماط نفسها أصبحت مرنة وتراعي الاختلافات.
+      return escapedHtml.replace(re, '<mark class="hl">$1</mark>');
+    }
+
+    function formatFootnotesHTML(text) {
+      const raw = (text || '').trim(); if (!raw) return '';
+      const items = raw.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+      const RE = /^\s*[(\[（]?\s*((?:\d+|[٠-٩]+))\s*[)\]）]?\s*[-–—:٫،.\u00B7]?\s*(.*)$/;
+      const html = items.map((t) => {
+        const m = t.match(RE);
+        if (m) {
+          const num = m[1], body = (m[2] || '').trim(), idx = `(${num})`;
+          return `<div class="fn-item"><span class="fn-idx">${escapeHtml(idx)}</span><span>${escapeHtml(body)}</span></div>`;
+        } else {
+          return `<div class="fn-item"><span class="fn-idx"></span><span>${escapeHtml(t)}</span></div>`;
+        }
+      }).join('');
+      return `<div class="footnotes">${html}</div>`;
+    }
+
+    // ===== الدالة المحدثة بعد إزالة تنظيف البادئات =====
+    function renderQABlocks(item, qStr) {
+      const terms = (qStr || '').trim(), hl = (html) => terms ? highlightHTML(html, terms) : html;
+      const qa = Array.isArray(item.qa) ? item.qa : [];
+      if (qa.length === 0) {
+        // عرض النص كما هو دون تنظيف البادئات
+        const qEsc = escapeHtml(item.question || '');
+        const aEsc = escapeHtml(item.answer || '');
+        return `<div class="qtext">${hl(qEsc)}</div><div class="abox">${hl(aEsc)}</div>`;
+      }
+      return qa.map(pair => {
+        // عرض النص كما هو دون تنظيف البادئات
+        const qEsc = escapeHtml(pair.q || '');
+        const aEsc = escapeHtml(pair.a || '');
+        return `<div class="qtext">${hl(qEsc)}</div><div class="abox">${hl(aEsc)}</div>`;
+      }).join('');
+    }
+
+    function card(it, i, qStr, showBadge) {
+      const id = itemId(it);
+      // استخدم displayOrder إن وجد، وإلا استخدم order لإظهار رقم المسألة
+      const prob = `<span class="badge-prob">مسألة ${toArabicDigits(it.displayOrder ?? it.order ?? '')}</span>`;
+      // شارة الجزء: استخدم الاسم الكامل مع البادئة عند الحاجة لتجنب التكرار
+      const labelBadge = partLabelForCard(it.part);
+      // لا نضيف بادئة "الجزء" إلى شارة الجزء
+      const partBadge = showBadge ? `<span class="badge-part">${labelBadge}</span>` : '';
+      const fhtmlRaw = it.footnotes ? formatFootnotesHTML(it.footnotes) : '';
+      const fhtml = qStr ? highlightHTML(fhtmlRaw, qStr) : fhtmlRaw;
+      const qaHTML = renderQABlocks(it, qStr);
+      const savedNow = SAVED.has(id);
+      const saveIconHtml = savedNow
+        ? '<i class="material-symbols-outlined" style="color:#e11d48; font-variation-settings: \'FILL\' 1, \'wght\' 400, \'GRAD\' 0, \'opsz\' 24;">bookmark</i>'
+        : '<i class="material-symbols-outlined">bookmark</i>';
+      const saveTitle = savedNow ? 'إزالة من المحفوظات' : 'حفظ المسألة';
+      return `<article class="card" data-id="${id}">
+        <div class="cardHead">
+          ${partBadge ? `<div class="headTop">${partBadge}</div>` : ''}
+          <div class="headBottom">
+            <div class="headLeft">${prob}</div>
+            <div class="shareWrap">
+              <button class="copyBtn" title="نسخ المسألة" aria-label="نسخ المسألة" data-id="${id}"><i class="material-symbols-outlined">content_copy</i></button>
+              <button class="saveBtn" title="${saveTitle}" aria-label="${saveTitle}" data-id="${id}" aria-pressed="${savedNow ? 'true' : 'false'}">
+              ${saveIconHtml}
+            </button>
+            <button class="shareBtn" title="مشاركة" aria-label="مشاركة" data-id="${id}"><i class="material-symbols-outlined">share</i></button>
+            <div class="share-menu" id="share-${id}" role="menu" aria-label="مشاركة">
+              <a class="share-chip share-fb" data-net="fb" title="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/></svg></a>
+              <a class="share-chip share-x"  data-net="x"  title="X"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16"><path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/></svg></a>
+              <a class="share-chip share-wa" data-net="wa" title="WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/></svg></a>
+              <a class="share-chip share-tele" data-net="tg" title="Telegram"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-telegram" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/></svg></a>
+            </div>
+            </div>
+          </div>
+        </div>
+        ${qaHTML}
+        ${fhtml}
+      </article>`;
+    }
+
+    function headerCard(h) { return `<article class="hdrCard" data-hid="${h.id}"><div class="hdrTitle">${escapeHtml(h.title || '')}</div></article>`; }
+
+    function textCard(t, qStr) {
+      // المحتوى من Quill يُخزَّن كـ HTML - نعرضه مباشرة مع تظليل البحث
+      const terms = (qStr || '').trim();
+      const hl = (html) => terms ? highlightHTML(html, terms) : html;
+      const content = hl(t.content || '');
+      const fhtml = hl(formatFootnotesHTML(t.footnotes || ''));
+      return `<article class="card" data-tid="${t.id}">
+        <div class="qtext">${content}</div>
+        ${fhtml}
+      </article>`;
+    }
+
+    function buildCombinedList() {
+      const q = ($('#search').value || '').trim();
+      const partVal = getCurrentPart();
+      const p = partVal ? Number(partVal) : null;
+
+      if (GO_MODE && GO_ORDER != null) {
+        let qs = DATA.filter(x => Number(x.order) === Number(GO_ORDER) && (!p || Number(x.part) === p));
+        qs.sort((a, b) => (Number(a.part) - Number(b.part)));
+        const combined = qs.map(x => ({ type: 'q', data: x }));
+        return { combined, filteredQuestionCount: qs.length };
+      }
+
+      let qs = DATA.slice();
+
+      if (HEADER_MODE && HEADER_ID) {
+        qs = qs.filter(x => String(x.headerId || '') === String(HEADER_ID));
+      } else if (p && !SAVED_MODE) {
+        qs = qs.filter(x => Number(x.part) === p);
+      }
+
+      if (SAVED_MODE) qs = qs.filter(x => SAVED.has(itemId(x)));
+
+      if (q) {
+        const normalizedQuery = normalizeArabic(q.toLowerCase());
+        const terms = buildTerms(q);
+
+        qs = qs.filter(x => {
+          // البحث فقط في محتوى المسائل (وليس العناوين)
+          const questionText = normalizeArabic((x.question || '').toLowerCase());
+          const answerText = normalizeArabic((x.answer || '').toLowerCase());
+          const footnotesText = normalizeArabic((x.footnotes || '').toLowerCase());
+
+          // البحث في الأسئلة والأجوبة المتعددة إذا وجدت
+          let qaText = '';
+          if (Array.isArray(x.qa)) {
+            qaText = x.qa.map(pair =>
+              normalizeArabic((pair.q || '').toLowerCase()) + ' ' +
+              normalizeArabic((pair.a || '').toLowerCase())
+            ).join(' ');
+          }
+
+          const allText = questionText + ' ' + answerText + ' ' + footnotesText + ' ' + qaText;
+
+          // البحث بجميع المصطلحات
+          if (terms.length > 0) {
+            return terms.every(term => allText.includes(term));
+          } else {
+            return allText.includes(normalizedQuery);
+          }
+        });
+      }
+
+      qs.sort((a, b) => (Number(a.part) - Number(b.part)) || ((a.order || 0) - (b.order || 0)));
+
+      if (SAVED_MODE || HEADER_MODE || q) { // إذا كان هناك بحث، نعرض المسائل والنصوص المطابقة
+        const combined = qs.map(x => ({ type: 'q', data: x }));
+
+        // إضافة النصوص المطابقة للبحث
+        if (q) {
+          const normalizedQuery = normalizeArabic(q.toLowerCase());
+          const terms = buildTerms(q);
+          let matchingTexts = TEXTS.slice();
+          if (p) matchingTexts = matchingTexts.filter(t => Number(t.part) === p);
+
+          matchingTexts = matchingTexts.filter(t => {
+            const contentText = normalizeArabic((t.content || '').toLowerCase());
+            const footnotesText = normalizeArabic((t.footnotes || '').toLowerCase());
+            const allText = contentText + ' ' + footnotesText;
+
+            if (terms.length > 0) {
+              return terms.every(term => allText.includes(term));
+            } else {
+              return allText.includes(normalizedQuery);
+            }
+          });
+
+          combined.push(...matchingTexts.map(t => ({ type: 't', data: t })));
+        }
+
+        return { combined, filteredQuestionCount: qs.length };
+      }
+
+      // فقط عند عدم وجود بحث نعرض العناوين والنصوص
+      let hs = HEADERS.slice();
+      if (p) hs = hs.filter(h => Number(h.part) === p);
+
+      // إضافة النصوص
+      let ts = TEXTS.slice();
+      if (p) ts = ts.filter(t => Number(t.part) === p);
+
+      // إنشاء قائمة الأجزاء ديناميكياً بناءً على HEADERS عند عدم تحديد جزء
+      let parts;
+      if (p) {
+        parts = [p];
+      } else {
+        // إذا كان BOOKS_LIST متاحاً استخدم ترتيبه، وإلا استخرج الأجزاء من HEADERS مع فرزها
+        if (Array.isArray(BOOKS_LIST) && BOOKS_LIST.length > 0) {
+          const availableParts = new Set(HEADERS.map(h => Number(h.part)).filter(n => !isNaN(n)));
+          parts = BOOKS_LIST.map(b => Number(b.id)).filter(id => availableParts.has(id));
+        } else {
+          parts = Array.from(new Set(
+            HEADERS.map(h => Number(h.part)).filter(n => !isNaN(n))
+          )).sort((a, b) => a - b);
+        }
+      }
+      const result = [];
+      for (const part of parts) {
+        const qsP = qs.filter(x => Number(x.part) === part);
+        const hsP = hs.filter(x => Number(x.part) === part);
+        const tsP = ts.filter(x => Number(x.part) === part);
+
+        // دمج الكل في قائمة واحدة مع نوع وموضع (anchor)
+        const getAnchor = (item, type) => {
+          if (type === 'q') return item.order || 0;
+          // للعناوين والنصوص نستخدم anchorOrder
+          const n = Number(item.anchorOrder);
+          return !Number.isNaN(n) && n >= 1 ? n - 0.1 : (Date.parse(item.createdAt || 0) / 1e15);
+        };
+
+        const getTextAnchor = (item) => {
+          const n = Number(item.anchorOrder);
+          return !Number.isNaN(n) && n >= 1 ? n - 0.05 : (Date.parse(item.createdAt || 0) / 1e15);
+        };
+
+        const allItems = [
+          ...qsP.map(q => ({ type: 'q', data: q, anchor: q.order || 0 })),
+          ...hsP.map(h => ({ type: 'h', data: h, anchor: getAnchor(h, 'h') })),
+          ...tsP.map(t => ({ type: 't', data: t, anchor: getTextAnchor(t) }))
+        ];
+
+        allItems.sort((a, b) => a.anchor - b.anchor);
+        allItems.forEach(item => result.push({ type: item.type, data: item.data }));
+      }
+      return { combined: result, filteredQuestionCount: qs.length };
+    }
+
+    // ========== [إضافات المشاركة الجديدة] ==========
+    function _cleanQ(s) { return String(s || '').trim(); } // إزالة تنظيف البادئات
+    function _cleanA(s) { return String(s || '').trim(); } // إزالة تنظيف البادئات
+
+    function _buildQAString(item) {
+      if (Array.isArray(item.qa) && item.qa.length) {
+        return item.qa.map((pair, idx) => {
+          const q = _cleanQ(pair.q);
+          const a = _cleanA(pair.a);
+          return `السؤال ${idx + 1}:\n${q}\n\nالجواب ${idx + 1}:\n${a}`;
+        }).join('\n\n');
+      } else {
+        const q = _cleanQ(item.question);
+        const a = _cleanA(item.answer);
+        return `السؤال:\n${q}\n\nالجواب:\n${a}`;
+      }
+    }
+    function _buildShareText(item) {
+      // عنوان مختصر للمشاركة: يتضمن اسم الجزء الكامل لمنع التكرار
+      // استخدم displayOrder إن وجد، وإلا استخدم order في رأس المشاركة
+      const head = `مسألة ${toArabicDigits(item.displayOrder ?? item.order ?? '')} — ${partFullLabel(item.part)}`;
+      const body = _buildQAString(item);
+      return `${head}\n\n${body}`;
+    }
+    function _getItemById(id) {
+      if (!window.__ITEM_INDEX__) {
+        window.__ITEM_INDEX__ = new Map(DATA.map(it => [itemId(it), it]));
+      }
+      return window.__ITEM_INDEX__.get(id) || null;
+    }
+    
+    function shareUrl(net, id) {
+      const item = _getItemById(id);
+      const url = new URL(location.href);
+      url.searchParams.set('id', id);
+      const uEnc = encodeURIComponent(url.toString());
+
+      if (!item) {
+        return url.toString();
+      }
+      const text = _buildShareText(item);
+      const textEnc = encodeURIComponent(text);
+      const textPlusUrlEnc = encodeURIComponent(`${text}\n\n${url.toString()}`);
+
+      switch (net) {
+        case 'fb': return `https://www.facebook.com/sharer/sharer.php?u=${uEnc}`;
+        case 'x': return `https://twitter.com/intent/tweet?text=${textEnc}%20${uEnc}`;
+        case 'wa': return `https://wa.me/?text=${textPlusUrlEnc}`;
+        case 'tg': return `https://t.me/share/url?url=${uEnc}&text=${textEnc}`;
+        default: return url.toString();
+      }
+    }
+    function _wireShareHandlers() {
+      $$('.shareBtn').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          document.getElementById('share-' + btn.dataset.id).classList.add('open');
+        };
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.share-menu') && !e.target.closest('.shareBtn')) {
+          $$('.share-menu.open').forEach(m => m.classList.remove('open'));
+        }
+      });
+      $$('.share-menu .share-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+          const net = chip.dataset.net;
+          const id = chip.closest('.share-menu').id.replace('share-', '');
+          const link = shareUrl(net, id);
+          window.open(link, '_blank', 'noopener,noreferrer');
+        });
+      });
+    }
+    // ========== [نهاية إضافات المشاركة] ==========
+
+    // تحديث العداد
+    function updateItemsCounter() {
+      const currentDisplayed = Math.min(CURRENT_ITEMS + LOAD_MORE_COUNT, TOTAL_ITEMS);
+      $('#currentItems').textContent = currentDisplayed;
+      $('#totalItems').textContent = TOTAL_ITEMS;
+
+      // العداد يظهر دائماً
+      $('#itemsCounter').style.display = 'block';
+    }
+
+    // تحديث حالة زر تحميل المزيد
+    function updateLoadMoreButton() {
+      const loadMoreBtn = $('#loadMore');
+      const itemsToShow = Math.min(CURRENT_ITEMS + LOAD_MORE_COUNT, TOTAL_ITEMS);
+
+      // إزالة جميع الفئات السابقة
+      loadMoreBtn.classList.remove('floating', 'completed');
+
+      if (TOTAL_ITEMS === 0) {
+        // لا توجد مسائل
+        loadMoreBtn.style.display = 'none';
+      } else if (TOTAL_ITEMS <= 25) {
+        // أقل من 25 مسألة - الوضع الطافي
+        loadMoreBtn.style.display = 'inline-flex';
+        loadMoreBtn.classList.add('floating');
+        loadMoreBtn.innerHTML = '<i class="material-symbols-outlined">check</i> تم تحميل جميع المسائل';
+        loadMoreBtn.disabled = true;
+      } else if (itemsToShow >= TOTAL_ITEMS) {
+        // تم تحميل كل المسائل
+        loadMoreBtn.style.display = 'inline-flex';
+        loadMoreBtn.classList.add('completed');
+        loadMoreBtn.innerHTML = '<i class="material-symbols-outlined">check</i> تم تحميل جميع المسائل';
+        loadMoreBtn.disabled = true;
+      } else {
+        // أكثر من 25 مسألة - وضع تحميل المزيد
+        loadMoreBtn.style.display = 'inline-flex';
+        loadMoreBtn.innerHTML = '<i class="material-symbols-outlined">arrow_downward</i> تحميل 25 مسألة أخرى';
+        loadMoreBtn.disabled = false;
+      }
+    }
+
+    // تحميل المزيد من المسائل
+    function loadMoreItems() {
+      CURRENT_ITEMS += LOAD_MORE_COUNT;
+      render();
+    }
+
+    // إعادة تعيين العداد عند تغيير البحث أو التصفية
+    function resetPagination() {
+      CURRENT_ITEMS = 0;
+      render();
+    }
+
+    function render() {
+      const { combined, filteredQuestionCount } = buildCombinedList();
+      const partVal = getCurrentPart();
+
+      setListTitle(filteredQuestionCount);
+      updateTocCardTitle();
+
+      // ===== التصحيح: نحسب فقط المسائل الفعلية (دون العناوين) =====
+      const actualQuestionsCount = combined.filter(item => item.type === 'q').length;
+      TOTAL_ITEMS = actualQuestionsCount;
+
+      updateItemsCounter();
+
+      // تحديث حالة الزر
+      updateLoadMoreButton();
+
+      if (combined.length === 0) {
+        const msg = GO_MODE
+          ? 'لا توجد مسائل بهذا الرقم في النطاق المحدد.'
+          : (SAVED_MODE
+            ? 'لا توجد مسائل محفوظة . استخدم أيقونة <i class="material-symbols-outlined">bookmark</i> داخل البطاقات للحفظ.'
+            : (HEADER_MODE ? 'لا توجد مسائل تحت هذا العنوان.' : 'لا توجد نتائج مطابقة لبحثك.'));
+        $('#list').innerHTML = `<div style="text-align:center;color:var(--muted);padding:20px;border:1px dashed var(--border);border-radius:14px;background:var(--card);">${msg}</div>`;
+        return;
+      }
+
+      // ===== التصحيح: نحدد العناصر المعروضة مع مراعاة العناوين =====
+      let itemsToShow = 0;
+      let displayedCount = 0;
+      const itemsToDisplay = [];
+
+      for (const item of combined) {
+        if (displayedCount >= CURRENT_ITEMS + LOAD_MORE_COUNT) break;
+
+        itemsToDisplay.push(item);
+        if (item.type === 'q') {
+          displayedCount++;
+        }
+      }
+
+      itemsToShow = displayedCount;
+
+      const qStr = ($('#search').value || '').trim();
+      const selectedPart = partVal ? Number(partVal) : 0;
+      const showBadge = (SAVED_MODE || HEADER_MODE || !selectedPart || GO_MODE);
+
+      const itemsHTML = itemsToDisplay.map((it, i) => {
+        if (it.type === 'h') return headerCard(it.data);
+        if (it.type === 't') return textCard(it.data, qStr);
+        return card(it.data, i, qStr, showBadge);
+      }).join('');
+
+      if (HEADER_MODE && HEADER_ID) {
+        const h = HEADERS.find(x => String(x.id) === String(HEADER_ID));
+        const hdr = h ? headerCard(h) : '';
+        $('#list').innerHTML = hdr + itemsHTML;
+      } else {
+        $('#list').innerHTML = itemsHTML;
+      }
+
+      // ==== ربط أزرار المشاركة (الجديد) ====
+      _wireShareHandlers();
+
+      // الحفظ
+      $$('.saveBtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          if (SAVED.has(id)) {
+            SAVED.delete(id);
+            toast('تم الحذف');
+          } else {
+            SAVED.add(id);
+            toast('تم الحفظ');
+          }
+          persistSaved();
+          updateSavedBadge();
+          render();
+        });
+      });
+
+      // النسخ
+      $$('.copyBtn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          const item = DATA.find(d => d.id === id);
+          if (!item) return;
+          
+          // تحضير النص للنسخ
+          let text = '';
+          const q = item.question || item.q || '';
+          const a = item.answer || item.a || '';
+          if (q) text += 'السؤال: ' + stripHtml(q) + '\n\n';
+          if (a) text += 'الجواب: ' + stripHtml(a);
+          if (item.footnotes) text += '\n\n' + stripHtml(item.footnotes);
+          
+          // محاولة النسخ بعدة طرق
+          let copied = false;
+          
+          // الطريقة 1: Clipboard API
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+              await navigator.clipboard.writeText(text.trim());
+              copied = true;
+            } catch (e) {}
+          }
+          
+          // الطريقة 2: execCommand (للمتصفحات القديمة والتطبيقات)
+          if (!copied) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text.trim();
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+              document.execCommand('copy');
+              copied = true;
+            } catch (e) {}
+            document.body.removeChild(textarea);
+          }
+          
+          if (copied) {
+            btn.innerHTML = '<i class="material-symbols-outlined">check</i>';
+            btn.classList.add('copied');
+            toast('تم النسخ');
+            setTimeout(() => {
+              btn.innerHTML = '<i class="material-symbols-outlined">content_copy</i>';
+              btn.classList.remove('copied');
+            }, 2000);
+          } else {
+            toast('فشل النسخ');
+          }
+        });
+      });
+
+      // إزالة التمييز القديم عند إعادة التصيير
+      $$('.card.highlighted').forEach(card => card.classList.remove('highlighted'));
+    }
+
+    const toTop = $('#toTop');
+    window.addEventListener('scroll', () => { toTop.classList.toggle('show', window.scrollY > 300); });
+    toTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const toolsToggle = $('#toolsToggle'), bottomBar = $('#bottomBar'), toolsOverlay = $('#toolsOverlay');
+    let barOpen = false;
+    function setBar(open) {
+      barOpen = open;
+      bottomBar.classList.toggle('open', open);
+      toolsOverlay.classList.toggle('show', open);
+      toolsToggle.setAttribute('aria-expanded', String(open));
+      toolsToggle.innerHTML = open ? '<i class="material-symbols-outlined">close</i>' : '<i class="material-symbols-outlined">palette</i>';
+    }
+    toolsToggle.onclick = (e) => { e.stopPropagation(); setBar(!barOpen); };
+    toolsOverlay.onclick = () => setBar(false);
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') setBar(false); });
+
+    let Z = SETTINGS.zoom;
+    function setZoom(z) { Z = Math.min(1.8, Math.max(0.8, z)); document.documentElement.style.setProperty('--zoom', Z); SETTINGS.zoom = Z; saveSettings(SETTINGS); }
+    $('#zoomIn').onclick = () => setZoom(Z + 0.1);
+    $('#zoomOut').onclick = () => setZoom(Z - 0.1);
+    $('#zoomReset').onclick = () => setZoom(DEFAULTS.zoom);
+    $$('.swatch').forEach(s => s.addEventListener('click', () => { applyInk(s.getAttribute('data-ink')); }));
+
+    function resetAll(onLoad = false) {
+      setTheme('light'); applyInk(DEFAULTS.ink); applyZoom(DEFAULTS.zoom);
+      CUR_PART = DEFAULTS.filterPart; $('#search').value = DEFAULTS.search;
+      $('#gotoNum').value = ''; setGoMode(null);
+      PAGE_SIZE = DEFAULTS.pageSize;
+      SETTINGS = { ...DEFAULTS }; saveSettings(SETTINGS);
+      CURRENT_ITEMS = 0;
+      if (!onLoad) { setBar(false); toast('تم إعادة الإعدادات الافتراضية'); }
+      render();
+    }
+    $('#resetAll').onclick = () => resetAll(false);
+
+    function confirmUI({ title = 'تفريغ المحفوظات', message = 'هل أنت متأكد؟', yesText = 'تأكيد', noText = 'إلغاء' }) {
+      return new Promise(resolve => {
+        const ov = $('#confirmOverlay'), t = $('#confirmTitle'), m = $('#confirmMsg'), y = $('#confirmYes'), n = $('#confirmNo');
+        t.textContent = title; m.textContent = message;
+        y.innerHTML = '<i class="material-symbols-outlined">delete</i> ' + yesText;
+        n.innerHTML = '<i class="material-symbols-outlined">close</i> ' + noText;
+        ov.style.display = 'flex';
+        ov.setAttribute('aria-hidden', 'false');
+        const focusables = Array.from(ov.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])'));
+        const first = focusables[0], last = focusables[focusables.length - 1];
+        const trap = (e) => {
+          if (e.key !== 'Tab') return;
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        };
+        ov.addEventListener('keydown', trap);
+        first?.focus();
+        const cleanup = () => {
+          ov.style.display = 'none';
+          ov.setAttribute('aria-hidden', 'true');
+          y.onclick = null; n.onclick = null;
+          ov.removeEventListener('keydown', trap);
+        };
+        y.onclick = () => { cleanup(); resolve(true); };
+        n.onclick = () => { cleanup(); resolve(false); };
+        ov.addEventListener('click', (e) => { if (e.target === ov) { cleanup(); resolve(false); } }, { once: true });
+      });
+    }
+
+    let homeBtn = null;
+    function setupSkybar() {
+      const partHolder = $('#partHolder');
+      homeBtn = document.createElement('button');
+      homeBtn.id = 'homeBtn';
+      homeBtn.className = 'iconbtn';
+      homeBtn.title = 'العودة للصفحة الرئيسية';
+      homeBtn.setAttribute('aria-label', 'العودة للصفحة الرئيسية');
+      homeBtn.innerHTML = '<i class="material-symbols-outlined">home</i>';
+      homeBtn.style.display = 'none';
+      partHolder.prepend(homeBtn);
+      homeBtn.addEventListener('click', () => { setSavedMode(false); setHeaderMode(false); setGoMode(null); CUR_PART = ''; SETTINGS.filterPart = ''; saveSettings(SETTINGS); resetPagination(); });
+
+      const searchDock = $('#searchDock'), searchRow = $('#searchRow');
+      if (searchDock && searchRow) {
+        searchDock.appendChild(searchRow);
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'closeSearch'; closeBtn.id = 'closeSearch'; closeBtn.innerHTML = '<i class="material-symbols-outlined">close</i>';
+        closeBtn.setAttribute('title', 'إغلاق'); closeBtn.setAttribute('aria-label', 'إغلاق البحث');
+        searchRow.appendChild(closeBtn);
+        closeBtn.onclick = () => {
+          searchDock.classList.remove('open');
+          $('#search').value = '';
+          $('#gotoNum').value = '';
+          setGoMode(null);
+          resetPagination();
+        };
+        searchDock.classList.remove('open');
+      }
+
+      const searchBtn = $('#searchBtn');
+      if (searchBtn) { searchBtn.addEventListener('click', () => { const sd = $('#searchDock'); const showing = sd.classList.contains('open'); sd.classList.toggle('open', !showing); if (!showing) { setTimeout(() => { $('#search')?.focus(); }, 10); } }); }
+
+      const fb = $('#filtersBar');
+      const hasVisible = [...fb.querySelectorAll('#searchRow')].some(el => el.offsetParent !== null);
+      if (!hasVisible) { fb.style.display = 'none'; }
+    }
+
+    (function stickFullWidth() {
+      const skybar = document.getElementById('skybar'); if (!skybar) return;
+      const update = () => {
+        const h = skybar.offsetHeight || 56;
+        document.documentElement.style.setProperty('--skybar-h', h + 'px');
+        document.documentElement.style.setProperty('--skybar-gap', `calc(var(--skybar-h) + 4px)`);
+      };
+      window.addEventListener('resize', update); update();
+    })();
+
+    function updatePartHomeUI() {
+      // تم تعديل منطق واجهة العودة لتبقى زر "الكتب" دائماً ظاهراً، ويُخفى زر الصفحة الرئيسية.
+      const pickerBtn = $('#openPicker');
+      if (homeBtn) { homeBtn.style.display = 'none'; }
+      if (pickerBtn) { pickerBtn.style.display = 'inline-flex'; }
+    }
+
+    function setSavedMode(on) {
+      SAVED_MODE = !!on;
+      if (on) { setHeaderMode(false); setGoMode(null); }
+      updatePartHomeUI();
+      resetPagination();
+
+      const btn = $('#savedToggle');
+      if (SAVED_MODE) {
+        btn.title = 'تفريغ المحفوظات';
+        btn.setAttribute('aria-label', 'تفريغ المحفوظات');
+        btn.innerHTML = '<i class="material-symbols-outlined">restart_alt</i><span id="savedCount" class="badge-bubble">' + SAVED.size + '</span>';
+      } else {
+        btn.title = 'المحفوظات';
+        btn.setAttribute('aria-label', 'المحفوظات');
+        btn.innerHTML = '<i class="material-symbols-outlined">bookmark</i><span id="savedCount" class="badge-bubble">' + SAVED.size + '</span>';
+      }
+      updateSavedBadge();
+    }
+    function setHeaderMode(on, hid = null) {
+      HEADER_MODE = !!on;
+      HEADER_ID = on ? hid : null;
+      if (on) { SAVED_MODE = false; setGoMode(null); }
+      updatePartHomeUI();
+      resetPagination();
+      if (on && hid) { smoothScrollToHeader(hid); }
+    }
+    function smoothScrollToHeader(headerId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => { highlightHeaderQuestions(headerId); }, 500);
+    }
+    function highlightHeaderQuestions(headerId) {
+      $$('.card.highlighted').forEach(card => card.classList.remove('highlighted'));
+      const headerCard = document.querySelector(`.hdrCard[data-hid="${headerId}"]`);
+      if (headerCard) {
+        let nextElement = headerCard.nextElementSibling;
+        let highlightedCount = 0;
+        while (nextElement && !nextElement.classList.contains('hdrCard')) {
+          if (nextElement.classList.contains('card')) {
+            nextElement.classList.add('highlighted');
+            highlightedCount++;
+          }
+          nextElement = nextElement.nextElementSibling;
+        }
+        if (highlightedCount > 0) { toast(`تم عرض ${highlightedCount} مسألة تحت هذا العنوان`); }
+      }
+    }
+
+    function setGoMode(order) {
+      if (order == null || order === '') {
+        GO_MODE = false; GO_ORDER = null;
+      } else {
+        GO_MODE = true; GO_ORDER = Number(order);
+        SAVED_MODE = false; HEADER_MODE = false; HEADER_ID = null;
+      }
+      updatePartHomeUI();
+      resetPagination();
+    }
+
+    function wireSavedToggle() {
+      const btn = $('#savedToggle');
+      btn.addEventListener('click', async () => {
+        if (!SAVED_MODE) {
+          // تفعيل وضع المحفوظات
+          setSavedMode(true);
+          // إذا كنا في وضع بطاقات الكتب، انتقل مباشرة إلى عرض قائمة المسائل المحفوظة
+          const partsView = document.getElementById('partsViewMasail');
+          if (partsView && partsView.style.display !== 'none') {
+            // اختر جميع الكتب (الجزء فارغ) حتى نعرض كل المسائل المحفوظة
+            openMasailPart('');
+          }
+        } else {
+          if (SAVED.size === 0) { toast('لا توجد عناصر محفوظة لتفريغها'); return; }
+          const ok = await confirmUI({
+            title: 'تفريغ المحفوظات',
+            message: 'هل انت متأكد',
+            yesText: 'نعم',
+            noText: 'إلغاء'
+          });
+          if (ok) {
+            SAVED.clear();
+            persistSaved();
+            updateSavedBadge();
+            toast('تم تفريغ المحفوظات');
+            render();
+          }
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const sd = $('#searchDock');
+        if (sd && sd.classList.contains('open')) {
+          sd.classList.remove('open');
+          $('#search').value = '';
+          $('#gotoNum').value = '';
+          setGoMode(null);
+          resetPagination();
+          $('#searchBtn')?.focus();
+        }
+        $$('.share-menu.open').forEach(m => m.classList.remove('open'));
+        if ($('#tocOverlay').classList.contains('show')) closeToc();
+      }
+    });
+
+    const selTools = $('#selTools');
+    const copySel = $('#copySel');
+    const searchSel = $('#searchSel');
+    let selHideTimer = null;
+    let selLock = false;
+
+    function getSelectedText() {
+      const sel = window.getSelection();
+      return sel && sel.toString().trim() ? sel.toString() : '';
+    }
+    function positionSelTools() {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return false;
+      const range = sel.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      if (!rect || (rect.width === 0 && rect.height === 0)) return false;
+      const x = rect.left + rect.width / 2 + window.scrollX;
+      const y = rect.top + window.scrollY;
+      selTools.style.left = x + 'px';
+      selTools.style.top = (y - 12) + 'px';
+      selTools.style.transform = 'translate(-50%, -100%)';
+      return true;
+    }
+    function showSelTools() {
+      if (getSelectedText()) {
+        if (positionSelTools()) {
+          selTools.style.display = 'flex';
+        }
+      }
+    }
+    function hideSelTools() { if (!selLock) selTools.style.display = 'none'; }
+
+    selTools.addEventListener('mousedown', () => { selLock = true; });
+    selTools.addEventListener('mouseup', () => { setTimeout(() => { selLock = false; hideSelTools(); }, 120); });
+
+    // منع قائمة المتصفح/السياق قدر الإمكان أثناء التحديد والضغط على نصوص المحتوى
+    document.addEventListener('contextmenu', (e) => {
+      if (getSelectedText()) { e.preventDefault(); return; }
+      const t = e.target;
+      if (t && t.closest && t.closest('.qtext, .abox, .footnotes, .hdrTitle')) e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('selectionchange', () => {
+      clearTimeout(selHideTimer);
+      selHideTimer = setTimeout(() => {
+        if (selLock) return;
+        if (getSelectedText()) { showSelTools(); } else { hideSelTools(); }
+      }, 100);
+    });
+    document.addEventListener('mouseup', () => { setTimeout(() => { if (!selLock) { getSelectedText() ? showSelTools() : hideSelTools(); } }, 70); });
+    window.addEventListener('scroll', () => { if (selTools.style.display !== 'none') { if (!positionSelTools()) hideSelTools(); } });
+
+    copySel.addEventListener('click', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = getSelectedText();
+      if (!txt) { hideSelTools(); return; }
+      try { await navigator.clipboard.writeText(txt); toast('تم نسخ النص'); }
+      catch {
+        const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); toast('تم نسخ النص'); } catch { }
+        ta.remove();
+      }
+      setTimeout(() => { selLock = false; hideSelTools(); }, 120);
+    });
+
+    function openSearchWith(text) {
+      const sd = $('#searchDock');
+      if (sd && !sd.classList.contains('open')) { sd.classList.add('open'); }
+      const input = $('#search');
+      if (input) {
+        input.value = text; setGoMode(null); resetPagination(); input.focus();
+      }
+      setTimeout(() => { selLock = false; hideSelTools(); }, 120);
+    }
+    searchSel.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = getSelectedText();
+      if (!txt) { hideSelTools(); return; }
+      openSearchWith(txt);
+    });
+
+    const openPickerBtn = $('#openPicker');
+    const overlay = $('#pickerOverlay');
+    const picker = $('#partsPicker');
+    const closeBtn = $('#closePicker');
+    const pickerList = $('#pickerList');
+
+    function openPicker() {
+      document.body.classList.add('modal-open');
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      picker.classList.add('open');
+      openPickerBtn.setAttribute('aria-expanded', 'true');
+      const curVal = getCurrentPart();
+      const cur = [...pickerList.querySelectorAll('.pRow')].find(b => String(b.dataset.val || '') === String(curVal)) || pickerList.querySelector('.pRow');
+      setTimeout(() => cur?.focus(), 10);
+    }
+    function closePicker() {
+      picker.classList.remove('open');
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      openPickerBtn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('modal-open');
+    }
+    function pickPart(val) {
+      CUR_PART = val || '';
+      SETTINGS.filterPart = CUR_PART; saveSettings(SETTINGS);
+      pickerList.querySelectorAll('.pRow').forEach(b => {
+        const on = String(b.dataset.val || '') === String(CUR_PART);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      resetPagination();
+      closePicker();
+    }
+    // عدّلنا سلوك زر "الكتب": عند الضغط عليه يعود المستخدم إلى شبكة بطاقات الكتب بدلاً من فتح قائمة منبثقة
+    openPickerBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      backToParts();
+    });
+    closeBtn.addEventListener('click', closePicker);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closePicker(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) closePicker(); });
+    pickerList.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pRow'); if (!btn) return;
+      pickPart(btn.dataset.val || '');
+    });
+
+    function updatePartCounts() {
+      // حساب عدد المسائل لكل جزء اعتماداً على BOOKS_LIST إن توافرت
+      const counts = {};
+      if (Array.isArray(BOOKS_LIST) && BOOKS_LIST.length > 0) {
+        BOOKS_LIST.forEach(b => { counts[b.id] = 0; });
+      } else {
+        // fallback للأجزاء من 1 إلى 5
+        for (let i = 1; i <= 5; i++) { counts[i] = 0; }
+      }
+      (DATA || []).forEach(it => {
+        const p = String(it.part);
+        if (counts[p] != null) { counts[p]++; }
+      });
+      // تحديث تسميات العناصر في القائمة
+      // تحديث "جميع الكتب"
+      const allCount = Object.values(counts).reduce((a, b) => a + b, 0);
+      const allLabel = document.querySelector('.pRow[data-val=""] .pLabel');
+      if (allLabel) { allLabel.textContent = `جميع الكتب (${allCount}) مسألة`; }
+      // تحديث كل جزء
+      Object.keys(counts).forEach(id => {
+        const label = document.querySelector(`.pRow[data-val="${id}"] .pLabel`);
+        if (label) { label.textContent = `${partWord(id)} (${counts[id]}) مسألة`; }
+      });
+    }
+
+    /**
+     * بناء قائمة الأجزاء في منتقي الأجزاء بشكل ديناميكي استناداً إلى BOOKS_LIST.
+     * تُستدعى هذه الدالة بعد تحميل البيانات لتحديث القائمة.
+     */
+    function populatePartsPicker() {
+      const pickerList = document.getElementById('pickerList');
+      if (!pickerList) return;
+      pickerList.innerHTML = '';
+      // أضف خيار "جميع الكتب"
+      pickerList.innerHTML += `
+        <button class="pRow" role="option" data-val="" aria-selected="${getCurrentPart() ? 'false' : 'true'}">
+          <span class="pPlainBox"><span class="plain" aria-hidden="true">📚</span></span>
+          <span class="pLabel">جميع الكتب (0) مسألة</span>
+        </button>
+      `;
+      // أضف الأجزاء من BOOKS_LIST أو استخدم الأجزاء الافتراضية 1-5
+      // استخدم ترتيب الكتب كما هو موجود في BOOKS_LIST إن وُجد، ولا تقم بفرزها. في حال عدم وجود قائمة كتب
+      // (Namebooks)، استخدم الأجزاء الافتراضية 1-5 وقم بفرزها تصاعدياً حتى يظهر الترتيب المتوقع للمستخدم.
+      const usingBooksList = Array.isArray(BOOKS_LIST) && BOOKS_LIST.length > 0;
+      const parts = usingBooksList
+        ? BOOKS_LIST.map(b => ({ id: String(b.id), name: b.name }))
+        : [{ id: '1', name: partWord(1) }, { id: '2', name: partWord(2) }, { id: '3', name: partWord(3) }, { id: '4', name: partWord(4) }, { id: '5', name: partWord(5) }];
+      if (!usingBooksList) {
+        // في الوضع الافتراضي فقط نقوم بفرز الأجزاء بحسب الرقم
+        parts.sort((a, b) => Number(a.id) - Number(b.id));
+      }
+      parts.forEach(p => {
+        const isSel = String(getCurrentPart()) === String(p.id);
+        // استخدم أيقونة موحدة (كتاب) لكل جزء بدلاً من الدوائر الملونة
+        pickerList.innerHTML += `
+          <button class="pRow" role="option" data-val="${p.id}" aria-selected="${isSel ? 'true' : 'false'}">
+            <span class="pPlainBox"><span class="plain" aria-hidden="true">📖</span></span>
+            <span class="pLabel">${p.name} (0) مسألة</span>
+          </button>
+        `;
+      });
+    }
+
+    /**
+     * عرض بطاقات الأجزاء (الكتب) بتصميم عمودي مع صور
+     */
+    function renderMasailPartsGrid() {
+      const grid = document.getElementById('masailPartsGrid');
+      if (!grid) return;
+      
+      // حساب عدد المسائل
+      const counts = {};
+      if (Array.isArray(BOOKS_LIST) && BOOKS_LIST.length > 0) {
+        BOOKS_LIST.forEach(b => { counts[String(b.id)] = 0; });
+      } else {
+        for (let i = 1; i <= 5; i++) { counts[String(i)] = 0; }
+      }
+      (DATA || []).forEach(it => {
+        const p = String(it.part);
+        if (counts[p] != null) { counts[p]++; }
+      });
+
+      const allCount = Object.values(counts).reduce((a, b) => a + b, 0);
+      let html = '';
+
+      // 1. بطاقة جميع الكتب
+      // نستخدم الصورة all.png
+      html += `
+        <div class="part-card" data-id="">
+          <div class="part-count">${toArabicDigits(allCount)} مسألة</div>
+          <img src="covers/all.png" class="part-cover" alt="جميع الكتب" loading="lazy" draggable="false" oncontextmenu="return false">
+          <div class="part-info">
+            <div class="part-title">جميع الكتب</div>
+          </div>
+        </div>
+      `;
+
+      // 2. بطاقات الأجزاء
+      const usingBooksList = Array.isArray(BOOKS_LIST) && BOOKS_LIST.length > 0;
+      const parts = usingBooksList
+        ? BOOKS_LIST.map(b => ({ id: String(b.id), name: b.name }))
+        : [{ id: '1', name: partWord(1) }, { id: '2', name: partWord(2) }, { id: '3', name: partWord(3) }, { id: '4', name: partWord(4) }, { id: '5', name: partWord(5) }];
+      
+      if (!usingBooksList) {
+        parts.sort((a, b) => Number(a.id) - Number(b.id));
+      }
+
+      parts.forEach(p => {
+        const count = counts[p.id] || 0;
+        // اسم الصورة يكون رقم الجزء (1.png, 2.png...)
+        const imgPath = `covers/${p.id}.png`;
+        
+        html += `
+          <div class="part-card" data-id="${p.id}">
+            <div class="part-count">${toArabicDigits(count)} مسألة</div>
+            <img src="${imgPath}" class="part-cover" alt="${p.name}" loading="lazy" draggable="false" oncontextmenu="return false" onerror="this.src='covers/all.png'">
+            <div class="part-info">
+              <div class="part-title">${p.name}</div>
+            </div>
+          </div>
+        `;
+      });
+
+      grid.innerHTML = html;
+      
+      grid.querySelectorAll('.part-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = card.getAttribute('data-id');
+          openMasailPart(id || '');
+        });
+      });
+    }
+
+    /**
+     * فتح جزء محدد أو جميع الكتب من شبكة البطاقات في صفحة المسائل.
+     * يعين الجزء الحالي ويظهر قائمة المسائل ويخفي شبكة البطاقات.
+     */
+    function openMasailPart(partId) {
+      CUR_PART = partId || '';
+      SETTINGS.filterPart = CUR_PART; saveSettings(SETTINGS);
+      
+      // إظهار شريط الأدوات وإخفاء الهيدر الرئيسي عند الدخول للكتاب
+      $('#skybar').style.display = 'flex';
+      $('header').style.display = 'none';
+
+      // تحديث قائمة منتقي الأجزاء وعدد المسائل
+      populatePartsPicker();
+      updatePartCounts();
+      // إظهار/إخفاء أقسام الصفحة
+      const partsView = document.getElementById('partsViewMasail');
+      const listView = document.getElementById('listView');
+      const searchDock = document.getElementById('searchDock');
+      if (partsView) { partsView.style.display = 'none'; }
+      if (listView) { 
+        listView.style.display = ''; 
+        listView.classList.add('anim-enter'); // تشغيل الانيميشن
+      }
+      if (searchDock) { searchDock.style.display = ''; }
+      // show the search button when switching into list view so users can actually search
+      const searchBtn = document.getElementById('searchBtn');
+      if (searchBtn) {
+        // use inline-flex to preserve the icon button layout; empty string falls back to stylesheet default
+        searchBtn.style.display = 'inline-flex';
+      }
+      // إعادة التهيئة وعرض المسائل
+      resetPagination();
+      // تحديث عنوان الفهرست وفق الجزء الحالي
+      updateTocCardTitle();
+    }
+
+    /**
+     * الرجوع إلى شبكة بطاقات الأجزاء من قائمة المسائل.
+     */
+    function backToParts() {
+      // إخفاء شريط الأدوات وإظهار الهيدر الرئيسي عند العودة للرئيسية
+      $('#skybar').style.display = 'none';
+      $('header').style.display = 'block';
+
+      // إعادة إلغاء جميع الأوضاع الخاصة (المحفوظات/العناوين/الانتقال إلى رقم) والعودة للوضع العادي
+      setSavedMode(false);
+      setHeaderMode(false);
+      setGoMode(null);
+      // إعادة تعيين الجزء الحالي
+      CUR_PART = '';
+      SETTINGS.filterPart = '';
+      saveSettings(SETTINGS);
+      // إخفاء قائمة المسائل وشريط البحث وإظهار شبكة الكتب
+      const partsView = document.getElementById('partsViewMasail');
+      const listView = document.getElementById('listView');
+      const searchDock = document.getElementById('searchDock');
+      if (listView) { 
+        listView.style.display = 'none'; 
+        listView.classList.remove('anim-enter'); // إعادة تهيئة الانيميشن
+      }
+      if (searchDock) { searchDock.style.display = 'none'; }
+      // hide the search button when returning to the cards grid; searching is not available in this view
+      const searchBtn = document.getElementById('searchBtn');
+      if (searchBtn) {
+        searchBtn.style.display = 'none';
+      }
+      if (partsView) { partsView.style.display = ''; }
+      // إعادة بناء شبكة البطاقات وتحديث العدادات
+      populatePartsPicker();
+      updatePartCounts();
+      renderMasailPartsGrid();
+      // إعادة تعيين حقول البحث والذهاب وعداد العناصر دون تصيير القائمة
+      $('#search').value = '';
+      $('#gotoNum').value = '';
+      CURRENT_ITEMS = 0;
+      TOTAL_ITEMS = 0;
+      // تحديث عنوان الفهرست
+      updateTocCardTitle();
+    }
+
+    function showToc() {
+      const partVal = getCurrentPart();
+      const titleEl = $('#tocModalTitle');
+      const listEl = $('#tocList');
+      const backBtn = $('#tocBackBtn');
+
+      // التحكم في إظهار زر الرجوع
+      if (TOC_MODE === 'headers' && TOC_FROM_PARTS_LIST) {
+        backBtn.style.display = 'inline-flex';
+      } else {
+        backBtn.style.display = 'none';
+      }
+
+      if (TOC_MODE === 'parts') {
+        // تحديث العنوان بناءً على الجزء المحدد حالياً (باستخدام partFullLabel لمنع تكرار كلمة "الجزء")
+        if (partVal) {
+          titleEl.textContent = `فهرست ${partFullLabel(partVal)}`;
+        } else {
+          titleEl.textContent = 'فهرست جميع الكتب';
+        }
+
+        // حساب أعداد المسائل لكل جزء ديناميكياً
+        const counts = {};
+        (DATA || []).forEach(it => {
+          const p = Number(it.part);
+          if (!isNaN(p)) counts[p] = (counts[p] || 0) + 1;
+        });
+
+        // إذا كان هناك جزء محدد، اعرض عناوينه مباشرة
+        if (partVal) {
+          TOC_FROM_PARTS_LIST = false; // دخلنا مباشرة من جزء محدد
+          showHeadersForPart(partVal);
+          return;
+        }
+
+        // إذا لم يكن هناك جزء محدد، اعرض قائمة جميع الكتب
+        // إنشاء عناصر الفهرست ديناميكياً عند عدم تحديد جزء
+        // استخدم ترتيب الكتب من BOOKS_LIST إذا كانت متاحة، وإلا قم بفرز الأجزاء المستخرجة من counts
+        let partNumbers;
+        if (Array.isArray(BOOKS_LIST) && BOOKS_LIST.length > 0) {
+          partNumbers = BOOKS_LIST.map(b => Number(b.id)).filter(id => counts[id] != null);
+        } else {
+          partNumbers = Object.keys(counts).map(Number).sort((a, b) => a - b);
+        }
+        listEl.innerHTML = partNumbers.map(p => {
+          // استخدم اسم كامل للجزء بدون تكرار كلمة "الجزء"
+          const label = `فهرست ${partFullLabel(p)}`;
+          const count = counts[p] || 0;
+          return `<div class="tocItem" data-part="${p}"><span class="tocLabel">${label}</span><span class="tocCount">(${count})</span></div>`;
+        }).join('');
+        // ربط الأحداث لكل عنصر فهرست
+        $$('.tocItem').forEach(item => {
+          item.addEventListener('click', () => {
+            const part = item.getAttribute('data-part');
+            TOC_FROM_PARTS_LIST = true;
+            showHeadersForPart(part);
+          });
+        });
+      } else if (TOC_MODE === 'headers') {
+        // عرض عناوين الجزء المحدد
+        const partName = TOC_CURRENT_PART ? partFullLabel(TOC_CURRENT_PART) : 'جميع الكتب';
+        titleEl.textContent = `فهرست ${partName}`;
+
+        let headersToShow = HEADERS;
+        if (TOC_CURRENT_PART) {
+          headersToShow = HEADERS.filter(h => Number(h.part) === Number(TOC_CURRENT_PART));
+        }
+
+        const questionCountByHeader = {};
+        const pool = DATA;
+        pool.forEach(q => {
+          const hid = q.headerId;
+          if (hid) questionCountByHeader[hid] = (questionCountByHeader[hid] || 0) + 1;
+        });
+
+        if (headersToShow.length === 0) {
+          listEl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:16px;">لا توجد فواصل.</div>`;
+        } else {
+          listEl.innerHTML = headersToShow.map(h => {
+            const count = questionCountByHeader[h.id] || 0;
+            return `
+              <div class="tocItem" data-hid="${h.id}">
+                <span class="tocLabel">${escapeHtml(h.title)}</span>
+                <span class="tocCount">(${count})</span>
+              </div>
+            `;
+          }).join('');
+
+          $$('.tocItem').forEach(item => {
+            item.addEventListener('click', () => {
+              const hid = item.getAttribute('data-hid');
+              // أغلق نافذة الفهرست
+              closeToc();
+              // إذا كان المستخدم لا يزال في صفحة البطاقات (أقسام الكتب)، قم بفتح قائمة المسائل للجزء الحالي
+              const partsView = document.getElementById('partsViewMasail');
+              const listView = document.getElementById('listView');
+              if (partsView && (!listView || listView.style.display === 'none')) {
+                // استخدم الجزء المُختار من الفهرست، أو فراغ لعرض جميع الكتب
+                const partToOpen = TOC_CURRENT_PART || '';
+                openMasailPart(partToOpen);
+              }
+              // فعل وضع العنوان للعنوان المحدد
+              setHeaderMode(true, hid);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+          });
+        }
+      }
+
+      const overlay = $('#tocOverlay');
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+
+    function showHeadersForPart(part) {
+      TOC_MODE = 'headers';
+      TOC_CURRENT_PART = part;
+      showToc();
+    }
+
+    function closeToc() {
+      const overlay = $('#tocOverlay');
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      // إعادة تعيين وضع الفهرست إلى الأجزاء عند الإغلاق
+      TOC_MODE = 'parts';
+      TOC_CURRENT_PART = null;
+      TOC_FROM_PARTS_LIST = false;
+    }
+
+    $('#tocBtn').addEventListener('click', showToc);
+    $('#tocClose').addEventListener('click', closeToc);
+    $('#tocBackBtn').addEventListener('click', () => {
+      TOC_MODE = 'parts';
+      TOC_CURRENT_PART = null;
+      TOC_FROM_PARTS_LIST = false;
+      showToc();
+    });
+    $('#tocOverlay').addEventListener('click', (e) => { if (e.target === $('#tocOverlay')) closeToc(); });
+
+    const AR_DIGITS = { '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4', '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9' };
+    function normalizeDigits(s) {
+      return String(s || '').replace(/[٠-٩]/g, d => AR_DIGITS[d] ?? d).replace(/[^\d]/g, '');
+    }
+    function wireGoto() {
+      const input = $('#gotoNum');
+      if (!input) return;
+      input.addEventListener('input', () => {
+        clearTimeout(GO_TIMER);
+        GO_TIMER = setTimeout(() => {
+          const numStr = normalizeDigits(input.value).slice(0, 4);
+          input.value = numStr.replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+          if (numStr === '') { setGoMode(null); return; }
+          const n = parseInt(numStr, 10);
+          if (isNaN(n) || n <= 0) { setGoMode(null); return; }
+          setGoMode(n);
+        }, 250);
+      });
+    }
+
+    // ربط زر تحميل المزيد
+    $('#loadMore').addEventListener('click', loadMoreItems);
+
+    // ربط الأحداث لإعادة التعيين
+    $('#search').oninput = () => { resetPagination(); };
+    $('#gotoNum').oninput = () => { resetPagination(); };
+
+    (async function init() {
+      setTheme(SETTINGS.theme);
+      applyInk(SETTINGS.ink);
+      applyZoom(SETTINGS.zoom);
+
+      CUR_PART = SETTINGS.filterPart || '';
+
+      // دالة موحدة لتبديل المظهر وتحديث جميع الأيقونات
+      function toggleThemeApp() {
+        const cur = document.documentElement.getAttribute('data-theme');
+        const newTheme = cur === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        toast(`الوضع ${newTheme === 'dark' ? 'الداكن' : 'الفاتح'}`);
+      }
+
+      // ربط الزر الموجود في شريط الأدوات (Skybar)
+      const themeBtnSky = $('#theme');
+      if (themeBtnSky) themeBtnSky.onclick = toggleThemeApp;
+
+      // ربط الزر الجديد الموجود في الهيدر
+      const headerThemeBtn = $('#headerThemeBtn');
+      if (headerThemeBtn) headerThemeBtn.onclick = toggleThemeApp;
+
+      setupSkybar();
+      wireSavedToggle();
+      updateSavedBadge();
+
+      // ===== تحديث تحميل البيانات لدعم نظام الملفات المنفصلة =====
+      const [qData, hData, tData] = await Promise.all([loadAllQuestions(), loadHeaders(), loadTexts()]);
+      DATA = Array.isArray(qData) ? qData : []; HEADERS = Array.isArray(hData) ? hData : []; TEXTS = Array.isArray(tData) ? tData : [];
+
+
+      // بناء قائمة منتقي الأجزاء وتحديث العدادات
+      populatePartsPicker();
+      updatePartCounts();
+      // بدلاً من تصيير المسائل مباشرة، نعرض شبكة بطاقات الأجزاء ليتخيّر المستخدم الجزء المطلوب
+      renderMasailPartsGrid();
+
+      // منع قائمة الضغط المطوّل/الزر الأيمن على صور الأغلفة
+      document.addEventListener('contextmenu', (e) => {
+        if (e.target && e.target.closest && e.target.closest('.part-cover, .listTitleCover')) e.preventDefault();
+      }, { passive: false });
+
+      // تأكد من إظهار شبكة الأجزاء وإخفاء قائمة المسائل وشريط البحث
+      const partsView = document.getElementById('partsViewMasail');
+      const listView = document.getElementById('listView');
+      const searchDock = document.getElementById('searchDock');
+      if (partsView) { partsView.style.display = ''; }
+      if (listView) { listView.style.display = 'none'; }
+      if (searchDock) { searchDock.style.display = 'none'; }
+      // ensure the search button is hidden on initial load since the cards view does not support searching
+      const searchBtnInit = document.getElementById('searchBtn');
+      if (searchBtnInit) { searchBtnInit.style.display = 'none'; }
+      // ربط الحقول الخاصة بالانتقال إلى رقم مسألة بعد اختيار جزء
+      wireGoto();
+
+      document.getElementById('yr').textContent = new Date().getFullYear();
+      reapplyInkForTheme();
+
+    })();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+
+    window.addEventListener('resize', () => { clearTimeout(window.__rAF); window.__rAF = setTimeout(render, 120); });
+  </script>
+     <div id="aboutModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <button id="closeAboutBtn" class="close-modal"><i class="material-symbols-outlined">close</i></button>
+      
+      <div class="modal-body">
+        <iframe id="aboutFrame" src="" frameborder="0"></iframe>
+      </div>
+    </div>
+  </div>
+
 <script>
-if ('serviceWorker' in navigator) {
-window.addEventListener('load', () => {
-navigator.serviceWorker.register('./sw.js')
-.then(registration => {
-console.log('تم تسجيل Service Worker بنجاح:', registration.scope);
-})
-.catch(error => {
-console.log('فشل تسجيل Service Worker:', error);
-});
-});
-}
+  // ننتظر تحميل الصفحة بالكامل لضمان وجود العناصر
+  document.addEventListener('DOMContentLoaded', function() {
+    
+    // تعريف العناصر باستخدام المعرفات المباشرة لضمان الدقة
+    var aboutBtn = document.getElementById('headerAboutBtn');
+    var aboutModal = document.getElementById('aboutModal');
+    var closeAboutBtn = document.getElementById('closeAboutBtn');
+    var aboutFrame = document.getElementById('aboutFrame');
+
+    // التأكد من وجود العناصر قبل تشغيل الكود لتجنب الأخطاء
+    if (aboutBtn && aboutModal && closeAboutBtn) {
+      
+      // حدث النقر لفتح النافذة
+      aboutBtn.onclick = function(e) {
+        e.preventDefault(); // منع أي سلوك افتراضي
+        aboutFrame.src = "sejo.html"; // تحميل الصفحة
+        aboutModal.style.display = 'flex'; // إظهار النافذة
+      };
+
+      // حدث النقر لإغلاق النافذة من زر الإغلاق X
+      closeAboutBtn.onclick = function() {
+        aboutModal.style.display = 'none';
+        aboutFrame.src = ""; // تفريغ الرابط
+      };
+
+      // حدث النقر لإغلاق النافذة عند الضغط في الخارج
+      window.onclick = function(event) {
+        if (event.target == aboutModal) {
+          aboutModal.style.display = 'none';
+          aboutFrame.src = "";
+        }
+      };
+    } else {
+      console.error("عذراً: لم يتم العثور على عناصر نافذة حول التطبيق في HTML");
+    }
+  });
 </script>
-<script src="masail_database.js"></script>
-<script type="module" src="script.js"></script>
+<script>
+  /**
+   * نظام التعريب الشامل للأرقام (ArNum System)
+   * يقوم بتحويل الأرقام الإنجليزية إلى عربية في جميع النصوص الظاهرة
+   * ويتجاهل الأكواد البرمجية والسمات (Attributes) لضمان عدم تعطل التطبيق.
+   */
+  (function() {
+    // 1. خريطة التحويل
+    const AR_DIGITS = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
+    
+    // دالة التحويل النصي المباشر
+    function toAr(str) {
+      if (!str) return '';
+      return str.replace(/\d/g, d => AR_DIGITS[d]);
+    }
+
+    // 2. دالة معالجة العقد النصية (تتأكد أننا نغير النص الظاهر فقط وليس الكود)
+    function handleNode(node) {
+      // تجاهل وسوم السكربت والستايل والمدخلات (لتجنب المشاكل التقنية)
+      const ignoreTags = ['SCRIPT', 'STYLE', 'INPUT', 'TEXTAREA', 'CODE'];
+      if (node.parentElement && ignoreTags.includes(node.parentElement.tagName)) return;
+
+      // التحقق مما إذا كان النص يحتوي على أرقام إنجليزية
+      if (node.nodeType === 3 && /\d/.test(node.nodeValue)) {
+        node.nodeValue = toAr(node.nodeValue);
+      }
+    }
+
+    // 3. دالة تفحص شجرة العناصر (DOM)
+    function walk(node) {
+      if (node.nodeType === 3) { // 3 تعني عقدة نصية
+        handleNode(node);
+      } else {
+        // إذا كان عنصراً، ابحث في أبنائه
+        node.childNodes.forEach(walk);
+      }
+    }
+
+    // 4. المراقب القوي (MutationObserver)
+    // وظيفته: مراقبة أي تغيير يحدث في الصفحة تلقائياً
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        // حالة إضافة عناصر جديدة (مثل تحميل البيانات من JSON)
+        mutation.addedNodes.forEach(node => {
+          walk(node);
+        });
+
+        // حالة تغيير نص موجود بالفعل
+        if (mutation.type === 'characterData') {
+          handleNode(mutation.target);
+        }
+      });
+    });
+
+    // تشغيل المراقب على كامل الصفحة
+    observer.observe(document.body, {
+      childList: true,      // مراقبة إضافة/حذف العناصر
+      subtree: true,        // مراقبة جميع الأبناء والأحفاد
+      characterData: true   // مراقبة تغيير النصوص
+    });
+
+    // تشغيل أولي (لتحويل ما هو موجود بالفعل عند التحميل)
+    walk(document.body);
+    
+    // تعديل عنوان الصفحة (Title) أيضاً
+    document.title = toAr(document.title);
+
+  })();
+</script>
+
 </body>
+
 </html>
