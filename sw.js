@@ -1,5 +1,5 @@
 /* Service Worker - منهج النور */
-const CACHE_VERSION = 'v2';;
+const CACHE_VERSION = 'v3';;
 const CACHE_NAME = `manhaj-alnoor-${CACHE_VERSION}`;
 
 // ملفات أساسية (عدّل/زد القائمة إذا رغبت لاحقاً)
