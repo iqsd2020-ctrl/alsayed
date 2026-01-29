@@ -1,5 +1,5 @@
 /* Service Worker - منهج النور */
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';;
 const CACHE_NAME = `manhaj-alnoor-${CACHE_VERSION}`;
 
 // ملفات أساسية (عدّل/زد القائمة إذا رغبت لاحقاً)
@@ -8,6 +8,7 @@ const CORE_ASSETS = [
   './index.html',
   './manifest.json',
   './favicon.png',
+  './sejo.html',
 
   // Fonts (محلية)
   './ABO-THAR.TTF',
@@ -53,10 +54,18 @@ self.addEventListener('fetch', (event) => {
   // فقط نفس الأصل
   if (url.origin !== self.location.origin) return;
 
-  // تنقل SPA: ارجع index.html من الكاش إن أمكن
+  // تنقل SPA: ارجع index.html من الكاش إن أمكن (مع استثناء sejo.html)
   if (req.mode === 'navigate') {
     event.respondWith((async () => {
       const cache = await caches.open(CACHE_NAME);
+
+      // استثناء نافذة "حول التطبيق"
+      if (url.pathname.endsWith('/sejo.html')) {
+        const cachedAbout = await cache.match('./sejo.html');
+        if (cachedAbout) return cachedAbout;
+        return fetch(req);
+      }
+
       const cached = await cache.match('./index.html');
       if (cached) return cached;
       return fetch(req);
