@@ -15,7 +15,6 @@ const CORE_ASSETS = [
   './lotus-linotype-light.ttf',
   './lotus-linotype-bold.ttf',
   './amiri.ttf',
-  "./MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf",
 
   // Data (محلية)
   './headers.json',

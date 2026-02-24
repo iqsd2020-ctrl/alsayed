@@ -2008,6 +2008,35 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     }
     
+    .part-card[data-id=""] {
+      grid-column: 1 / -1;
+      min-height: 0;
+    }
+
+    .part-card[data-id=""] .part-cover {
+      width: 100%;
+      aspect-ratio: 16 / 6;
+      border-bottom: 1px solid var(--border);
+      border-inline-start: 0;
+      object-fit: cover;
+    }
+
+    .part-card[data-id=""] .part-info {
+      text-align: center;
+      align-items: center;
+      padding: 12px 10px;
+    }
+
+    @media (max-width: 500px) {
+      .part-card[data-id=""] .part-cover {
+        aspect-ratio: 16 / 7;
+      }
+
+      .part-card[data-id=""] .part-info {
+        padding: 10px 8px;
+      }
+    }
+
     /* إخفاء العناصر القديمة التي لا نحتاجها */
     .part-card::before, .part-icon-side {
       display: none;
@@ -2710,18 +2739,23 @@
           // توليد BOOKS_LIST اعتماداً على HEADERS
           BOOKS_LIST = partNumbers.map(p => ({ id: String(p), name: partWord(p) }));
         }
-        const allData = [];
-        await Promise.all(partNumbers.map(async (p) => {
+        const partsData = await Promise.all(partNumbers.map(async (p) => {
           const items = await fetchJson(`Books/part${p}.json`);
           if (Array.isArray(items)) {
-            items.forEach(item => allData.push({ ...item, part: p }));
+            return items.map(item => ({ ...item, part: p }));
           }
+          return [];
         }));
-        return allData;
+        return partsData.flat();
       } catch (e) { console.error(e); return []; }
     }
 
-    async function loadHeaders() { const d = await fetchJson('headers.json'); return Array.isArray(d) ? d : []; }
+    async function loadHeaders() {
+      if (Array.isArray(loadHeaders._cache)) return loadHeaders._cache;
+      const d = await fetchJson('headers.json');
+      loadHeaders._cache = Array.isArray(d) ? d : [];
+      return loadHeaders._cache;
+    }
     async function loadTexts() { const d = await fetchJson('texts.json'); return Array.isArray(d) ? d : []; }
 
     function getCurrentPart() {
@@ -2755,8 +2789,13 @@
       // تم إلغاء هذه الدالة لأن زر الفهرست أصبح أيقونة في الشريط العلوي ولا يحتاج لتحديث نص
     }
 
+    const __normArCache = new Map();
     function normalizeArabic(s) {
-      return (s || '')
+      const key = String(s || '');
+      const cached = __normArCache.get(key);
+      if (cached !== undefined) return cached;
+
+      const out = key
         .replace(/[\u0640\u0650\u064E\u064F\u064B\u064D\u064C\u0651\u0652]/g, '') // إزالة التشكيل
         .replace(/[إأآ]/g, 'ا') // توحيد الألف
         .replace(/[ة]/g, 'ه') // توحيد التاء المربوطة
@@ -2765,6 +2804,9 @@
         .replace(/[ئ]/g, 'ي') // توحيد الياء مع الهمزة
         .replace(/[ـ]/g, '') // إزالة التطويل
         .replace(/[\u200E\u200F\u202A-\u202E]/g, ''); // إزالة علامات الاتجاه
+
+      __normArCache.set(key, out);
+      return out;
     }
 
     function buildTerms(query) {
@@ -3172,16 +3214,29 @@
       $$('.copyBtn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-id');
-          const item = DATA.find(d => d.id === id);
+          const item = DATA.find(d => itemId(d) === id);
           if (!item) return;
           
           // تحضير النص للنسخ
           let text = '';
-          const q = item.question || item.q || '';
-          const a = item.answer || item.a || '';
-          if (q) text += 'السؤال: ' + stripHtml(q) + '\n\n';
-          if (a) text += 'الجواب: ' + stripHtml(a);
-          if (item.footnotes) text += '\n\n' + stripHtml(item.footnotes);
+          const qa = Array.isArray(item.qa) ? item.qa : [];
+
+          if (qa.length) {
+            qa.forEach((pair, idx) => {
+              const q = pair.q || pair.question || '';
+              const a = pair.a || pair.answer || '';
+              if (q) text += 'السؤال: ' + stripHtml(q) + '\n\n';
+              if (a) text += 'الجواب: ' + stripHtml(a);
+              if (idx < qa.length - 1 && (q || a)) text += '\n\n';
+            });
+          } else {
+            const q = item.question || item.q || '';
+            const a = item.answer || item.a || '';
+            if (q) text += 'السؤال: ' + stripHtml(q) + '\n\n';
+            if (a) text += 'الجواب: ' + stripHtml(a);
+          }
+
+          if (item.footnotes) text += (text ? '\n\n' : '') + stripHtml(item.footnotes);
           
           // محاولة النسخ بعدة طرق
           let copied = false;
@@ -3203,8 +3258,7 @@
             document.body.appendChild(textarea);
             textarea.select();
             try {
-              document.execCommand('copy');
-              copied = true;
+              copied = !!document.execCommand('copy');
             } catch (e) {}
             document.body.removeChild(textarea);
           }
@@ -3228,7 +3282,7 @@
     }
 
     const toTop = $('#toTop');
-    window.addEventListener('scroll', () => { toTop.classList.toggle('show', window.scrollY > 300); });
+    window.addEventListener('scroll', () => { toTop.classList.toggle('show', window.scrollY > 300); }, { passive: true });
     toTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     const toolsToggle = $('#toolsToggle'), bottomBar = $('#bottomBar'), toolsOverlay = $('#toolsOverlay');
@@ -3280,15 +3334,17 @@
         };
         ov.addEventListener('keydown', trap);
         first?.focus();
+        const onOverlayClick = (e) => { if (e.target === ov) { cleanup(); resolve(false); } };
         const cleanup = () => {
           ov.style.display = 'none';
           ov.setAttribute('aria-hidden', 'true');
           y.onclick = null; n.onclick = null;
           ov.removeEventListener('keydown', trap);
+          ov.removeEventListener('click', onOverlayClick);
         };
         y.onclick = () => { cleanup(); resolve(true); };
         n.onclick = () => { cleanup(); resolve(false); };
-        ov.addEventListener('click', (e) => { if (e.target === ov) { cleanup(); resolve(false); } }, { once: true });
+        ov.addEventListener('click', onOverlayClick);
       });
     }
 
@@ -3716,6 +3772,7 @@
      * يعين الجزء الحالي ويظهر قائمة المسائل ويخفي شبكة البطاقات.
      */
     function openMasailPart(partId) {
+      window.__partsViewScrollY = window.scrollY || window.pageYOffset || 0;
       CUR_PART = partId || '';
       SETTINGS.filterPart = CUR_PART; saveSettings(SETTINGS);
       
@@ -3744,6 +3801,7 @@
       }
       // إعادة التهيئة وعرض المسائل
       resetPagination();
+      window.scrollTo({ top: 0, behavior: 'auto' });
       // تحديث عنوان الفهرست وفق الجزء الحالي
       updateTocCardTitle();
     }
@@ -3783,6 +3841,7 @@
       populatePartsPicker();
       updatePartCounts();
       renderMasailPartsGrid();
+      window.scrollTo({ top: window.__partsViewScrollY || 0, behavior: 'auto' });
       // إعادة تعيين حقول البحث والذهاب وعداد العناصر دون تصيير القائمة
       $('#search').value = '';
       $('#gotoNum').value = '';
@@ -4065,10 +4124,15 @@
     })();
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js');
+      navigator.serviceWorker.register('./sw.js').catch(console.error);
     }
 
-    window.addEventListener('resize', () => { clearTimeout(window.__rAF); window.__rAF = setTimeout(render, 120); });
+    window.addEventListener('resize', () => {
+      const listView = document.getElementById('listView');
+      if (listView && listView.style.display === 'none') return;
+      clearTimeout(window.__rAF);
+      window.__rAF = setTimeout(render, 120);
+    });
   </script>
      <div id="aboutModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
@@ -4107,12 +4171,12 @@
       };
 
       // حدث النقر لإغلاق النافذة عند الضغط في الخارج
-      window.onclick = function(event) {
+      window.addEventListener('click', function(event) {
         if (event.target == aboutModal) {
           aboutModal.style.display = 'none';
           aboutFrame.src = "";
         }
-      };
+      });
     } else {
       console.error("عذراً: لم يتم العثور على عناصر نافذة حول التطبيق في HTML");
     }
